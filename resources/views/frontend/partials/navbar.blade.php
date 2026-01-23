@@ -169,7 +169,7 @@
                 Konsultasi
             </a>
 
-            <button id="mobile-toggle" class="lg:hidden w-12 h-12 flex flex-col justify-center items-end gap-1.5 p-2 group bg-black/20 rounded-lg backdrop-blur-sm border border-white/10">
+            <button id="mobile-toggle" aria-label="Buka Menu Navigasi" class="lg:hidden w-12 h-12 flex flex-col justify-center items-end gap-1.5 p-2 group bg-black/20 rounded-lg backdrop-blur-sm border border-white/10">
                 <span class="w-6 h-0.5 bg-white transition-all duration-300 block"></span>
                 <span class="w-4 h-0.5 bg-white transition-all duration-300 block group-hover:w-6 uppercase"></span>
                 <span class="w-6 h-0.5 bg-white transition-all duration-300 block"></span>
@@ -219,7 +219,7 @@
         <a href="{{ route('home') }}#contact" class="block w-full py-4 rounded-xl bg-primary text-black font-bold text-center text-lg uppercase tracking-wider mb-8 shadow-lg shadow-primary/20">
             Mulai Konsultasi
         </a>
-        <div class="flex justify-center gap-8 text-white/50">
+        <div class="flex justify-center gap-8 text-white/50" aria-hidden="true">
             <span class="material-symbols-outlined text-2xl">mail</span>
             <span class="material-symbols-outlined text-2xl">call</span>
             <span class="material-symbols-outlined text-2xl">chat</span>

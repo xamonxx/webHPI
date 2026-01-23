@@ -5,7 +5,7 @@
 
     RewriteEngine On
 
-    # Force HTTPS
+    # Force HTTPS & WWW (Canonical)
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
@@ -24,11 +24,16 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
-# Security
+# Security Headers (Best Practices)
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set X-XSS-Protection "1; mode=block"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    # CSP (Adjust if needed, allowing Google Fonts & Analytics)
+    # Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com;"
 </IfModule>
 
 # Block sensitive files
@@ -37,17 +42,33 @@
     Deny from all
 </FilesMatch>
 
-# Compression
+# Compression (Gzip/Brotli)
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json font/woff2 image/svg+xml
 </IfModule>
 
-# Cache static files
+# Aggressive Browser Caching
 <IfModule mod_expires.c>
     ExpiresActive On
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
+    ExpiresDefault "access plus 1 month"
+    
+    # CSS & JS
     ExpiresByType text/css "access plus 1 year"
     ExpiresByType application/javascript "access plus 1 year"
+    
+    # Images
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # Fonts
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
 </IfModule>

@@ -171,7 +171,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="{{ asset('assets/css/fonts.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/css/material-symbols.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/css/material-symbols.css') }}" rel="stylesheet" media="print" onload="this.onload=null;this.media='all'" />
+    <noscript><link rel="stylesheet" href="{{ asset('assets/css/material-symbols.css') }}"></noscript>
     <link href="{{ asset('assets/css/aos.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet" />
 
@@ -257,13 +258,17 @@
         // CSRF Token for AJAX
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // Preloader
-        window.addEventListener('load', function() {
-            const preloader = document.getElementById('preloader');
-            preloader.style.opacity = '0';
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 500);
+        // Preloader Optimization (LCP Fix)
+        document.addEventListener('DOMContentLoaded', () => {
+             const preloader = document.getElementById('preloader');
+             // Small delay to ensure CSS critical path is painted
+             setTimeout(() => {
+                 preloader.style.opacity = '0';
+                 preloader.style.pointerEvents = 'none'; // Immediately unblock interaction
+                 setTimeout(() => {
+                     preloader.style.display = 'none';
+                 }, 500);
+             }, 100); 
         });
     </script>
 

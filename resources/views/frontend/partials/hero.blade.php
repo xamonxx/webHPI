@@ -12,6 +12,8 @@
         @endphp
         {{-- Optimized Hero Image --}}
         <img src="{{ $heroBg }}" 
+             srcset="{{ $heroBg }}&w=640 640w, {{ $heroBg }}&w=1024 1024w, {{ $heroBg }}&w=1920 1920w"
+             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
              alt="{{ $hero->title ?? 'Home Putra Interior Hero Image' }}" 
              class="absolute inset-0 w-full h-full object-cover animate-ken-burns"
              style="will-change: transform;"
