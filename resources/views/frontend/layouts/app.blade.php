@@ -164,15 +164,47 @@
     {{-- Tailwind CSS --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    {{-- Critical CSS (Inlined for FCP) --}}
+    <style>
+        .bg-background-light { background-color: #f8fafc; }
+        .dark .bg-background-dark { background-color: #0f1115; }
+        .text-white { color: #ffffff; }
+        .font-bold { font-weight: 700; }
+        .absolute { position: absolute; }
+        .relative { position: relative; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .object-cover { object-fit: cover; }
+        .z-0 { z-index: 0; }
+        .z-10 { z-index: 10; }
+        .z-20 { z-index: 20; }
+        /* Hero Content Critical Path */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .pt-20 { padding-top: 5rem; }
+        .pb-12 { padding-bottom: 3rem; }
+        .min-h-screen { min-height: 100vh; }
+    </style>
+
     {{-- Fonts (Preconnect for Performance) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="{{ asset('assets/css/fonts.css') }}" rel="stylesheet" />
+    
+    {{-- Non-Critical CSS (Loaded Async) --}}
+    <link href="{{ asset('assets/css/fonts.css') }}" rel="stylesheet" media="print" onload="this.onload=null;this.media='all'" />
     <link href="{{ asset('assets/css/material-symbols.css') }}" rel="stylesheet" media="print" onload="this.onload=null;this.media='all'" />
-    <noscript><link rel="stylesheet" href="{{ asset('assets/css/material-symbols.css') }}"></noscript>
     <link href="{{ asset('assets/css/aos.min.css') }}" rel="stylesheet" media="print" onload="this.onload=null;this.media='all'" />
-    <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet" /> {{-- Main Custom CSS --}}
+    
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('assets/css/fonts.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/material-symbols.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/css/aos.min.css') }}">
+    </noscript>
 
     @stack('styles')
 </head>
@@ -229,17 +261,20 @@
     <script defer src="{{ asset('assets/js/aos.min.js') }}"></script>
     <script defer src="{{ asset('assets/js/main.js') }}"></script>
     <script>
-        // Initialize AOS - Disable on mobile/tablet for immediate visibility
-        document.addEventListener('DOMContentLoaded', () => {
+        // Initialize AOS - Defer until everything is loaded for priority painting
+        window.addEventListener('load', () => {
             const isMobileOrTablet = window.innerWidth < 1024;
             // Check if AOS is defined to avoid errors
             if (typeof AOS !== 'undefined') {
-                AOS.init({
-                    duration: 800,
-                    once: true,
-                    offset: 50,
-                    disable: isMobileOrTablet // Disable AOS on mobile/tablet
-                });
+                // Ultra-delayed init for mobile to guarantee LCP first
+                setTimeout(() => {
+                    AOS.init({
+                        duration: 800,
+                        once: true,
+                        offset: 50,
+                        disable: isMobileOrTablet // Disable AOS on mobile/tablet
+                    });
+                }, 100);
             }
         });
 
