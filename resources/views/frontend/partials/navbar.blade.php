@@ -125,7 +125,7 @@
                             </a>
                         </div>
                         <div class="relative overflow-hidden rounded-xl border border-white/5 group/card">
-                            <img src="{{ asset('assets/images/materials/wood.jpg') }}" class="absolute inset-0 w-full h-full object-cover opacity-30 transition-transform duration-700 group-hover/card:scale-110" onerror="this.style.display='none'">
+                            <img src="{{ asset('assets/images/materials/multipleks-hpl.png') }}" class="absolute inset-0 w-full h-full object-cover opacity-30 transition-transform duration-700 group-hover/card:scale-110" onerror="this.style.display='none'">
                             <div class="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent"></div>
                             <div class="relative p-5 h-full flex flex-col justify-end">
                                 <span class="bg-primary text-black text-[9px] font-bold px-2 py-1 rounded w-fit uppercase mb-2">Featured</span>
