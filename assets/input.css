@@ -1,0 +1,546 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #0B0D11;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #333333;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #ffb204;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-background-light dark: bg-background-dark text-slate-900 dark:text-white antialiased overflow-x-hidden transition-colors duration-300;
+    }
+
+    /* Fix Animation initial state for Hero and Nav */
+    .hero-section [data-aos],
+    #main-nav {
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
+    }
+
+    @media (min-width: 1024px) {
+        .hero-section [data-aos] {
+            opacity: 0 !important;
+        }
+
+        .hero-section [data-aos].aos-animate {
+            opacity: 1 !important;
+        }
+    }
+
+    h1,
+    h2,
+    h3,
+    .brand-font {
+        @apply font-serif;
+    }
+
+    body,
+    nav,
+    button,
+    input,
+    select,
+    textarea {
+        @apply font-sans;
+    }
+}
+
+@layer components {
+
+    /* Glass Navigation */
+    .glass-nav {
+        background: rgba(11, 13, 17, 0.8);
+        @apply backdrop-blur-xl;
+        border-bottom: 1px solid rgba(255, 178, 4, 0.1);
+    }
+
+    .glass-nav.scrolled {
+        background: rgba(11, 13, 17, 0.95);
+        border-bottom: 1px solid rgba(255, 178, 4, 0.2);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Gold Gradient Text */
+    .text-gold-gradient {
+        background: linear-gradient(to right, #ffb204, #ffe066, #ffb204);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-size: 200% auto;
+        animation: shine 5s linear infinite;
+    }
+
+    /* Pulse Ring Animation */
+    .pulse-ring {
+        @apply absolute inset-0 rounded-full bg-primary opacity-60 -z-10;
+        animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+
+    /* Image Hover Effects */
+    .img-hover-zoom {
+        @apply overflow-hidden;
+    }
+
+    .img-hover-zoom img {
+        @apply transition-transform duration-1000 ease-in-out;
+    }
+
+    .img-hover-zoom:hover img {
+        @apply scale-110;
+    }
+
+    /* Magnetic Button Effect */
+    .magnetic-btn {
+        @apply transition-all duration-300;
+        transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .magnetic-btn:hover {
+        @apply -translate-y-[3px];
+        box-shadow: 0 20px 40px rgba(255, 178, 4, 0.3);
+    }
+
+    /* Underline Animation */
+    .underline-animation {
+        @apply relative;
+    }
+
+    .underline-animation::after {
+        content: '';
+        @apply absolute bottom-[-4px] left-0 w-0 h-[2px] bg-primary transition-all duration-300 ease-in-out;
+    }
+
+    .underline-animation:hover::after {
+        @apply w-full;
+    }
+
+    /* Card Hover Effect */
+    .card-hover {
+        @apply transition-all duration-500 ease-in-out;
+        transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .card-hover:hover {
+        @apply -translate-y-2.5;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Gradient Border */
+    .gradient-border {
+        @apply relative border-2 border-transparent;
+        background: linear-gradient(#161B22, #161B22) padding-box,
+            linear-gradient(135deg, #ffb204, #ffe066, #ffb204) border-box;
+    }
+
+    /* Glowing Button */
+    .glow-btn {
+        @apply relative overflow-hidden;
+    }
+
+    .glow-btn::before {
+        content: '';
+        @apply absolute -inset-[50%] w-[200%] h-[200%] rotate-[45deg];
+        background: linear-gradient(45deg,
+                transparent,
+                rgba(255, 178, 4, 0.1),
+                transparent);
+        animation: glow 3s linear infinite;
+    }
+
+    /* Parallax Background */
+    .parallax-bg {
+        @apply bg-fixed bg-center bg-no-repeat bg-cover;
+    }
+
+    /* Loading Skeleton */
+    .skeleton {
+        background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+    }
+
+    /* Mobile Menu */
+    .mobile-menu {
+        @apply translate-x-full transition-transform duration-300 ease-in-out;
+    }
+
+    .mobile-menu.active {
+        @apply translate-x-0;
+    }
+
+    /* Counter Animation */
+    .counter {
+        @apply inline-block;
+    }
+
+    /* === PREMIUM HOVER EFFECTS - TINGKAT DEWA === */
+
+    /* Premium Card Hover with Glow */
+    .premium-card {
+        @apply relative transition-all duration-500;
+        transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .premium-card::before {
+        content: '';
+        @apply absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500;
+        background: linear-gradient(135deg, rgba(255, 178, 4, 0.1) 0%, transparent 50%);
+    }
+
+    .premium-card:hover {
+        @apply -translate-y-3;
+        box-shadow:
+            0 25px 50px -12px rgba(0, 0, 0, 0.4),
+            0 0 40px rgba(255, 178, 4, 0.15);
+    }
+
+    .premium-card:hover::before {
+        @apply opacity-100;
+    }
+
+    /* Luxury Button Hover */
+    .luxury-btn {
+        @apply relative overflow-hidden transition-all duration-400;
+        transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .luxury-btn::before {
+        content: '';
+        @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    }
+
+    .luxury-btn::after {
+        content: '';
+        @apply absolute top-0 left-[-100%] w-full h-full;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.7s ease;
+    }
+
+    .luxury-btn:hover {
+        @apply -translate-y-1 scale-[1.02];
+        box-shadow: 0 20px 40px rgba(255, 178, 4, 0.4);
+    }
+
+    .luxury-btn:hover::before {
+        @apply opacity-100;
+    }
+
+    .luxury-btn:hover::after {
+        left: 100%;
+    }
+
+    /* Glow Link Hover */
+    .glow-link {
+        @apply relative transition-all duration-300;
+    }
+
+    .glow-link::after {
+        content: '';
+        @apply absolute bottom-0 left-0 w-0 h-[2px] transition-all duration-500;
+        background: linear-gradient(90deg, #ffb204, #ffe066, #ffb204);
+        box-shadow: 0 0 10px rgba(255, 178, 4, 0.5);
+    }
+
+    .glow-link:hover {
+        @apply text-primary;
+        text-shadow: 0 0 20px rgba(255, 178, 4, 0.3);
+    }
+
+    .glow-link:hover::after {
+        @apply w-full;
+    }
+
+    /* Icon Hover Spin & Glow */
+    .icon-hover {
+        @apply transition-all duration-500;
+    }
+
+    .icon-hover:hover {
+        @apply text-primary scale-110 rotate-12;
+        filter: drop-shadow(0 0 15px rgba(255, 178, 4, 0.6));
+    }
+
+    /* Image Reveal Hover */
+    .img-reveal {
+        @apply relative overflow-hidden;
+    }
+
+    .img-reveal::after {
+        content: '';
+        @apply absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-500;
+    }
+
+    .img-reveal img {
+        @apply transition-all duration-700;
+        transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .img-reveal:hover img {
+        @apply scale-110;
+    }
+
+    .img-reveal:hover::after {
+        @apply opacity-100;
+    }
+
+    /* Border Gradient Animation */
+    .border-glow {
+        @apply relative;
+    }
+
+    .border-glow::before {
+        content: '';
+        @apply absolute -inset-[2px] rounded-2xl opacity-0 transition-opacity duration-500 -z-10;
+        background: linear-gradient(135deg, #ffb204, #ffe066, #ffb204, #ffe066);
+        background-size: 300% 300%;
+        animation: gradient-rotate 3s ease infinite;
+    }
+
+    .border-glow:hover::before {
+        @apply opacity-100;
+    }
+
+    /* Floating Animation on Hover */
+    .float-hover {
+        @apply transition-transform duration-300;
+    }
+
+    .float-hover:hover {
+        animation: float-gentle 2s ease-in-out infinite;
+    }
+
+    /* Text Reveal Hover */
+    .text-reveal {
+        @apply relative overflow-hidden;
+    }
+
+    .text-reveal span {
+        @apply inline-block transition-transform duration-500;
+    }
+
+    .text-reveal:hover span {
+        animation: text-wave 0.5s ease forwards;
+    }
+
+    /* Premium Shadow Hover */
+    .shadow-hover {
+        @apply transition-all duration-500;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .shadow-hover:hover {
+        box-shadow:
+            0 25px 50px -12px rgba(0, 0, 0, 0.25),
+            0 0 0 1px rgba(255, 178, 4, 0.1),
+            inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+    }
+
+    /* Scale Bounce Hover */
+    .scale-bounce {
+        @apply transition-transform duration-300;
+        transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .scale-bounce:hover {
+        @apply scale-110;
+    }
+
+    /* Tilt 3D Hover Effect */
+    .tilt-3d {
+        @apply transition-transform duration-300;
+        transform-style: preserve-3d;
+        perspective: 1000px;
+    }
+
+    .tilt-3d:hover {
+        transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.02);
+    }
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: scale(2.0);
+        opacity: 0;
+    }
+}
+
+@keyframes glow {
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) rotate(45deg);
+    }
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* === PREMIUM HOVER KEYFRAMES === */
+@keyframes gradient-rotate {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes float-gentle {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes text-wave {
+    0% {
+        transform: translateY(0);
+    }
+
+    25% {
+        transform: translateY(-5px);
+    }
+
+    50% {
+        transform: translateY(0);
+    }
+
+    75% {
+        transform: translateY(5px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(255, 178, 4, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(255, 178, 4, 0.6);
+    }
+}
+
+@keyframes shimmer-slide {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Base Reveal Styles */
+[data-aos] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition-property: opacity, transform;
+    transition-duration: 0.8s;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+}
+
+[data-aos="fade-down"] {
+    transform: translateY(-30px);
+}
+
+[data-aos="fade-right"] {
+    transform: translateX(-30px);
+}
+
+[data-aos="fade-left"] {
+    transform: translateX(30px);
+}
+
+[data-aos="fade-in"] {
+    transform: none;
+}
+
+[data-aos].aos-animate {
+    opacity: 1 !important;
+    transform: translate(0, 0) !important;
+}
+
+[data-aos-delay="100"] {
+    transition-delay: 100ms;
+}
+
+[data-aos-delay="200"] {
+    transition-delay: 200ms;
+}
+
+[data-aos-delay="300"] {
+    transition-delay: 300ms;
+}
+
+[data-aos-delay="400"] {
+    transition-delay: 400ms;
+}
+
+[data-aos-delay="500"] {
+    transition-delay: 500ms;
+}
+
+@media (max-width: 1024px) {
+    [data-aos] {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}
