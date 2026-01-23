@@ -173,7 +173,7 @@
     <link href="{{ asset('assets/css/fonts.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/material-symbols.css') }}" rel="stylesheet" media="print" onload="this.onload=null;this.media='all'" />
     <noscript><link rel="stylesheet" href="{{ asset('assets/css/material-symbols.css') }}"></noscript>
-    <link href="{{ asset('assets/css/aos.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/css/aos.min.css') }}" rel="stylesheet" media="print" onload="this.onload=null;this.media='all'" />
     <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet" />
 
     @stack('styles')
@@ -182,18 +182,8 @@
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased overflow-x-hidden transition-colors duration-300">
 
     {{-- Preloader --}}
-    <div id="preloader" class="fixed inset-0 z-100 bg-background-dark flex items-center justify-center transition-opacity duration-500">
-        <div class="text-center">
-            <div class="relative w-24 h-24 mx-auto mb-6">
-                <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
-                <div class="absolute inset-0 border-4 border-transparent border-t-primary rounded-full animate-spin"></div>
-                <svg class="w-10 h-10 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 3L4 9v12h5v-7h6v7h5V9l-8-6z"></path>
-                </svg>
-            </div>
-            <p class="text-gray-400 text-sm uppercase tracking-widest">Memuat...</p>
-        </div>
-    </div>
+    {{-- Preloader (Removed for LCP Optimization) --}}
+    {{-- <div id="preloader" ...></div> --}}
 
     {{-- Skip to Main Content (Accessibility) --}}
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-black px-4 py-2 rounded-lg z-200">
@@ -258,18 +248,8 @@
         // CSRF Token for AJAX
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // Preloader Optimization (LCP Fix)
-        document.addEventListener('DOMContentLoaded', () => {
-             const preloader = document.getElementById('preloader');
-             // Small delay to ensure CSS critical path is painted
-             setTimeout(() => {
-                 preloader.style.opacity = '0';
-                 preloader.style.pointerEvents = 'none'; // Immediately unblock interaction
-                 setTimeout(() => {
-                     preloader.style.display = 'none';
-                 }, 500);
-             }, 100); 
-        });
+        // Preloader Optimization (Removed)
+        // document.addEventListener('DOMContentLoaded', () => { ... });
     </script>
 
     @stack('scripts')

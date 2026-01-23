@@ -10,21 +10,25 @@
         $defaultHeroBg = 'https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80';
         $heroBg = $hero?->background_url ?? $defaultHeroBg;
         @endphp
-        {{-- Optimized Hero Image --}}
-        <img src="{{ $heroBg }}" 
-             srcset="{{ $heroBg }}&w=640 640w, {{ $heroBg }}&w=1024 1024w, {{ $heroBg }}&w=1920 1920w"
-             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
-             alt="{{ $hero->title ?? 'Home Putra Interior Hero Image' }}" 
-             class="absolute inset-0 w-full h-full object-cover animate-ken-burns"
-             style="will-change: transform;"
-             fetchpriority="high"
-             loading="eager"
-             width="1920"
-             height="1080">
+        
+        {{-- Optimized Hero Image (LCP) --}}
+        <picture>
+            <source media="(max-width: 639px)" srcset="{{ $heroBg }}&w=640&q=75&fm=webp">
+            <source media="(min-width: 640px) and (max-width: 1023px)" srcset="{{ $heroBg }}&w=1024&q=80&fm=webp">
+            <source media="(min-width: 1024px)" srcset="{{ $heroBg }}&w=1920&q=85&fm=webp">
+            <img src="{{ $heroBg }}" 
+                 alt="{{ $hero->title ?? 'Home Putra Interior Hero Image' }}" 
+                 class="absolute inset-0 w-full h-full object-cover md:animate-ken-burns"
+                 style="will-change: transform;"
+                 fetchpriority="high"
+                 decoding="async"
+                 width="1920"
+                 height="1080">
+        </picture>
 
-        {{-- Complex Gradient Overlay --}}
-        <div class="absolute inset-0 bg-linear-to-r from-black/90 via-black/50 to-transparent z-10"></div>
-        <div class="absolute inset-0 bg-linear-to-t from-background-dark via-transparent to-black/40 z-10"></div>
+        {{-- Gradient Overlay (Simplified) --}}
+        <div class="absolute inset-0 bg-black/60 z-10"></div>
+        <div class="absolute inset-0 bg-linear-to-t from-background-dark via-transparent to-black/20 z-10"></div>
     </div>
 
     {{-- Content --}}
