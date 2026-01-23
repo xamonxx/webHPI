@@ -44,10 +44,8 @@
     <meta name="twitter:image" content="@yield('twitter_image', asset('assets/images/og-image.jpg'))">
 
     {{-- Favicon & Icons --}}
-    <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/favicon-16x16.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/images/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/images/logo.png') }}">
     <meta name="theme-color" content="#ffb204">
     <meta name="msapplication-TileColor" content="#0a0c10">
 
