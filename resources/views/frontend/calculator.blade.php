@@ -358,14 +358,14 @@
                             <label for="length-input" class="block text-xs uppercase tracking-widest font-bold text-gray-300 mb-4">Panjang (Meter Lari)</label>
                             <div class="relative">
                                 <input type="number" id="length-input" min="0.5" max="50" step="0.5" value="3"
-                                    class="w-full bg-background-dark border-2 border-white/10 rounded-xl text-white text-3xl font-bold p-5 pr-20 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                    class="w-full bg-[#222] border-2 border-white/10 rounded-xl text-white text-3xl font-bold p-5 pr-20 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
                                     placeholder="3.0">
                                 <span class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 font-medium text-lg">meter</span>
                             </div>
                             <div class="flex items-center gap-3 mt-4">
                                 <button type="button" aria-label="Kurangi panjang" onclick="adjustLength(-0.5)" class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 text-white text-xl font-bold hover:bg-primary hover:text-black hover:border-primary transition-all">−</button>
                                 <input type="range" id="length-slider" aria-label="Geser untuk mengatur panjang" min="0.5" max="20" step="0.5" value="3"
-                                    class="flex-1 h-3 bg-gray-700 rounded-full appearance-none cursor-pointer accent-primary">
+                                    class="flex-1 h-3 bg-gray-600 rounded-full appearance-none cursor-pointer accent-primary">
                                 <button type="button" aria-label="Tambah panjang" onclick="adjustLength(0.5)" class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 text-white text-xl font-bold hover:bg-primary hover:text-black hover:border-primary transition-all">+</button>
                             </div>
                         </div>

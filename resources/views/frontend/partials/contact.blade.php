@@ -225,7 +225,7 @@ $contactPhone = $settings['contact_phone'] ?? '+62 812 3456 7890';
         <!-- WhatsApp CTA -->
         <div class="mt-8 sm:mt-10 md:mt-12 text-center" data-aos="fade-up" data-aos-delay="200">
             <p class="text-gray-500 text-xs sm:text-sm mb-4 sm:mb-6">Butuh respons cepat?</p>
-            <a href="https://wa.me/{{ $whatsappNumber }}" class="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-6 md:px-8 py-3 sm:py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider transition-all hover:shadow-xl hover:shadow-green-500/30 group">
+            <a href="https://wa.me/{{ $whatsappNumber }}" aria-label="Chat WhatsApp Sekarang" class="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-6 md:px-8 py-3 sm:py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider transition-all hover:shadow-xl hover:shadow-green-500/30 group">
                 <span class="material-symbols-outlined text-base sm:text-lg">chat</span>
                 <span class="hidden sm:inline">Chat WhatsApp Sekarang</span>
                 <span class="sm:hidden">WhatsApp</span>
