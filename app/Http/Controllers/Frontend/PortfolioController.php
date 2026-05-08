@@ -45,7 +45,7 @@ class PortfolioController extends Controller
         $portfolio->load('photos');
 
         // Only show if active
-        if (!$portfolio->is_active) {
+        if (! $portfolio->is_active) {
             abort(404);
         }
 

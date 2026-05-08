@@ -20,18 +20,71 @@ Options -Indexes
 
 # Blokir akses ke file sensitif (Dotfiles, env, composer, dll)
 # Menggunakan sintaks Apache 2.4 (Require all denied) untuk mencegah Error 500
-<FilesMatch "^\.(env|git|svn)">
+<FilesMatch "^\.(env|git|svn|DS_Store|Thumbs\.db)">
     Require all denied
 </FilesMatch>
 
-<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|README\.md|artisan|vite\.config\.js|webpack\.mix\.js)$">
+<FilesMatch "^\.env\.">
     Require all denied
 </FilesMatch>
 
-# Blokir ekstensi file backup/log
-<FilesMatch "\.(bak|old|sql|log|sh)$">
+<FilesMatch "^\.git">
     Require all denied
 </FilesMatch>
+
+<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|phpunit\.xml\.dist|README\.md|artisan|vite\.config\.js|webpack\.mix\.js|yarn\.lock|tsconfig\.json|\.eslintrc|\.prettierrc)$">
+    Require all denied
+</FilesMatch>
+
+# Blokir ekstensi file backup/log/config
+<FilesMatch "\.(bak|old|sql|log|sh|ini|conf|cfg)$">
+    Require all denied
+</FilesMatch>
+
+# Blokir file PHP temp / edit files
+<FilesMatch "\.(php~|swp|swo|bak)$">
+    Require all denied
+</FilesMatch>
+
+# Blokir file database & credentials
+<FilesMatch "\.(sqlite|db|mdb)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(key|pem|cert|p12|pfx)$">
+    Require all denied
+</FilesMatch>
+
+# Blokir htaccess & htpasswd
+<FilesMatch "^\.ht">
+    Require all denied
+</FilesMatch>
+
+# Blokir file IDE/editor
+<FilesMatch "\.(vscode|idea)$">
+    Require all denied
+</FilesMatch>
+
+# Blokir file Lagrange-specific sensitive
+<FilesMatch "^lagrange\.(json|env|log)$">
+    Require all denied
+</FilesMatch>
+
+# Blokir direktori sensitif
+<IfModule mod_rewrite.c>
+    RewriteRule ^(vendor|node_modules|storage|bootstrap|cache|\.vscode|\.idea) - [F,L]
+</IfModule>
+
+# Blokir akses storage folder (kecuali public)
+<IfModule mod_rewrite.c>
+    RewriteRule ^storage/ - [F,L]
+    RewriteRule ^storage/[^/]+/[^/]+/ - [F,L]
+</IfModule>
+
+# Blokir akses bootstrap/cache
+<IfModule mod_rewrite.c>
+    RewriteRule ^(bootstrap|config|database|resources)/ - [F,L]
+</IfModule>
 
 # ------------------------------------------------------------------------------
 # 3. LARAVEL ROUTING (SHARED HOSTING FIX)

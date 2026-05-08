@@ -134,7 +134,7 @@ class PortfolioSeeder extends Seeder
                 ->get();
 
             foreach ($portfolios as $index => $data) {
-                $portfolio = $existing->get($index) ?? new Portfolio();
+                $portfolio = $existing->get($index) ?? new Portfolio;
 
                 $portfolio->fill([
                     ...collect($data)->except('slider_images')->all(),

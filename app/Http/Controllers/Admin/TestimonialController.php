@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Testimonial;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 class TestimonialController extends Controller
 {
@@ -17,6 +17,7 @@ class TestimonialController extends Controller
     public function index(): View
     {
         $testimonials = Testimonial::ordered()->latest()->paginate(10);
+
         return view('admin.testimonials.index', compact('testimonials'));
     }
 
@@ -97,7 +98,7 @@ class TestimonialController extends Controller
         // Handle image upload
         if ($request->hasFile('client_image')) {
             // Delete old image
-            if ($testimonial->client_image && !filter_var($testimonial->client_image, FILTER_VALIDATE_URL)) {
+            if ($testimonial->client_image && ! filter_var($testimonial->client_image, FILTER_VALIDATE_URL)) {
                 Storage::disk('public')->delete($testimonial->client_image);
             }
 
@@ -118,7 +119,7 @@ class TestimonialController extends Controller
     public function destroy(Testimonial $testimonial): RedirectResponse
     {
         // Delete image if exists
-        if ($testimonial->client_image && !filter_var($testimonial->client_image, FILTER_VALIDATE_URL)) {
+        if ($testimonial->client_image && ! filter_var($testimonial->client_image, FILTER_VALIDATE_URL)) {
             Storage::disk('public')->delete($testimonial->client_image);
         }
 

@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\HeroSection;
-use App\Models\User;
 use App\Models\SiteSetting;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 

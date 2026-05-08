@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('hero_sections')) {
+        if (! Schema::hasTable('hero_sections')) {
             return;
         }
 
@@ -29,6 +29,7 @@ return new class extends Migration
 
         if ($existingId) {
             DB::table('hero_sections')->where('id', $existingId)->update($hero);
+
             return;
         }
 

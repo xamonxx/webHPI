@@ -1,4 +1,6 @@
 *.log
+*.rar
+*.zip
 .DS_Store
 .env
 .env.backup
@@ -12,8 +14,11 @@
 /.vscode
 /.zed
 /auth.json
+/assets
+/build
 /node_modules
 /public/build
+/public/build.zip
 /public/hot
 /public/storage
 /storage/*.key
@@ -26,6 +31,7 @@
 !/storage/framework/testing/.gitignore
 !/storage/framework/views/.gitignore
 /storage/pail
+/tmp_build
 /vendor
 Homestead.json
 Homestead.yaml

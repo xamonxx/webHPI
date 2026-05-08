@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\HeroSection;
 use App\Models\Portfolio;
 use App\Models\Service;
-use App\Models\Testimonial;
-use App\Models\Statistic;
 use App\Models\SiteSetting;
+use App\Models\Statistic;
+use App\Models\Testimonial;
 use Illuminate\View\View;
 
 class HomeController extends Controller

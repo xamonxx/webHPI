@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Statistic;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class StatisticController extends Controller
@@ -16,6 +16,7 @@ class StatisticController extends Controller
     public function index(): View
     {
         $statistics = Statistic::orderBy('display_order')->get();
+
         return view('admin.statistics.index', compact('statistics'));
     }
 

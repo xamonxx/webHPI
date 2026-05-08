@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Portfolio extends Model
@@ -60,7 +60,7 @@ class Portfolio extends Model
      */
     public function resolveImageUrl(?string $path): ?string
     {
-        if (!$path) {
+        if (! $path) {
             return null;
         }
 
@@ -78,7 +78,7 @@ class Portfolio extends Model
             return asset($normalized);
         }
 
-        return asset('storage/' . $normalized);
+        return asset('storage/'.$normalized);
     }
 
     protected function photoPaths(): array
@@ -99,7 +99,7 @@ class Portfolio extends Model
             ->values()
             ->toArray();
 
-        if (!empty($relationPaths)) {
+        if (! empty($relationPaths)) {
             return $relationPaths;
         }
 

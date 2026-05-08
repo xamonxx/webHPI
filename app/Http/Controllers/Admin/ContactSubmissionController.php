@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ContactSubmission;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -16,6 +15,7 @@ class ContactSubmissionController extends Controller
     public function index(): View
     {
         $messages = ContactSubmission::latest()->paginate(15);
+
         return view('admin.messages.index', compact('messages'));
     }
 
@@ -25,7 +25,7 @@ class ContactSubmissionController extends Controller
     public function show(ContactSubmission $message): View
     {
         // Mark as read if not already
-        if (!$message->is_read) {
+        if (! $message->is_read) {
             $message->update(['is_read' => true]);
         }
 

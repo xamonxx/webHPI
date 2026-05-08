@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ServiceController extends Controller
@@ -16,6 +16,7 @@ class ServiceController extends Controller
     public function index(): View
     {
         $services = Service::ordered()->paginate(10);
+
         return view('admin.services.index', compact('services'));
     }
 

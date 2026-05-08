@@ -19,7 +19,7 @@ return new class extends Migration
             $table->index(['portfolio_id', 'sort_order']);
         });
 
-        if (!Schema::hasTable('portfolios')) {
+        if (! Schema::hasTable('portfolios')) {
             return;
         }
 
@@ -31,7 +31,7 @@ return new class extends Migration
                 foreach ($portfolios as $portfolio) {
                     $paths = [];
 
-                    if (!empty($portfolio->image)) {
+                    if (! empty($portfolio->image)) {
                         $paths[] = $portfolio->image;
                     }
 

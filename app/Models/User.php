@@ -3,14 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -111,7 +112,7 @@ class User extends Authenticatable
         $words = explode(' ', $name);
 
         if (count($words) >= 2) {
-            return strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+            return strtoupper(substr($words[0], 0, 1).substr($words[1], 0, 1));
         }
 
         return strtoupper(substr($name, 0, 2));

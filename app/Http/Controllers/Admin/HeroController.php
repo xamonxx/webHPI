@@ -38,19 +38,19 @@ class HeroController extends Controller
 
         $hero = HeroSection::first();
 
-        if (!$hero) {
-            $hero = new HeroSection();
+        if (! $hero) {
+            $hero = new HeroSection;
         }
 
         // Handle background image upload
         if ($request->hasFile('background_image')) {
             // Delete old image if exists
-            if ($hero->background_image && !filter_var($hero->background_image, FILTER_VALIDATE_URL)) {
-                Storage::disk('public')->delete('uploads/' . $hero->background_image);
+            if ($hero->background_image && ! filter_var($hero->background_image, FILTER_VALIDATE_URL)) {
+                Storage::disk('public')->delete('uploads/'.$hero->background_image);
             }
 
             $file = $request->file('background_image');
-            $filename = 'hero_' . time() . '.' . $file->getClientOriginalExtension();
+            $filename = 'hero_'.time().'.'.$file->getClientOriginalExtension();
             $file->storeAs('uploads', $filename, 'public');
             $hero->background_image = $filename;
         }

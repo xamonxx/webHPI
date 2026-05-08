@@ -17,7 +17,9 @@ use Throwable;
 class PortfolioController extends Controller
 {
     private const MAX_PHOTOS = 5;
+
     private const PHOTO_DISK = 'public';
+
     private const PHOTO_DIRECTORY = 'portfolio';
 
     public function index(): View
@@ -126,7 +128,6 @@ class PortfolioController extends Controller
                 $portfolio,
                 $validated,
                 $request,
-                $keptPhotoIds,
                 $removedPhotoIds,
                 $newPaths,
                 &$pathsToDeleteAfterCommit
@@ -224,10 +225,10 @@ class PortfolioController extends Controller
 
         foreach ($files as $file) {
             $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension());
-            $filename = Str::uuid()->toString() . '.' . $extension;
+            $filename = Str::uuid()->toString().'.'.$extension;
             $path = $file->storeAs(self::PHOTO_DIRECTORY, $filename, self::PHOTO_DISK);
 
-            if (!$path) {
+            if (! $path) {
                 throw new \RuntimeException('Failed to store uploaded portfolio photo.');
             }
 

@@ -28,12 +28,6 @@ Route::get('/portfolio/{portfolio}', [PortfolioController::class, 'show'])->name
 // Services
 Route::get('/services', [ServiceController::class, 'index'])->name('services.all');
 
-// Pricing Info Page
-Route::get('/pricing-info', function () {
-    return view('frontend.pricing-info');
-})->name('pricing.info');
-
-
 // --- AUTHENTICATION SAFETY NET ---
 // Fixes "Route [login] not defined" error if generic auth middleware triggers
 Route::get('/login', function () {
@@ -41,6 +35,4 @@ Route::get('/login', function () {
 })->name('login');
 
 // --- SITEMAP FOR SEO ---
-require __DIR__ . '/sitemap.php';
-
-
+require __DIR__.'/sitemap.php';

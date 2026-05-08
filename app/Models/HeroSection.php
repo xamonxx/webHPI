@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class HeroSection extends Model
 {
@@ -36,7 +36,7 @@ class HeroSection extends Model
      */
     public function getBackgroundUrlAttribute(): ?string
     {
-        if (!$this->background_image) {
+        if (! $this->background_image) {
             return null;
         }
 
@@ -48,6 +48,6 @@ class HeroSection extends Model
             return asset($this->background_image);
         }
 
-        return asset('storage/uploads/' . $this->background_image);
+        return asset('storage/uploads/'.$this->background_image);
     }
 }

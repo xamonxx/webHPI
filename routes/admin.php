@@ -1,13 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\ContactSubmissionController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HeroController;
 use App\Http\Controllers\Admin\PortfolioController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\StatisticController;
 use App\Http\Controllers\Admin\TestimonialController;
-use Illuminate\Support\Facades\Route;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +41,7 @@ Route::post('/login', function () {
         request()->session()->regenerate();
 
         // Update last login
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
         $user->update(['last_login' => now()]);
 
@@ -78,8 +81,6 @@ Route::middleware(['admin'])->group(function () {
         'destroy' => 'admin.portfolio.destroy',
     ]);
 
-
-
     // Services CRUD
     Route::resource('services', ServiceController::class)->names([
         'index' => 'admin.services.index',
@@ -103,7 +104,7 @@ Route::middleware(['admin'])->group(function () {
     ]);
 
     // Messages (Read Only + Delete)
-    Route::resource('messages', \App\Http\Controllers\Admin\ContactSubmissionController::class)
+    Route::resource('messages', ContactSubmissionController::class)
         ->only(['index', 'show', 'destroy'])
         ->names([
             'index' => 'admin.messages.index',
@@ -112,7 +113,7 @@ Route::middleware(['admin'])->group(function () {
         ]);
 
     // Statistics Management
-    Route::resource('statistics', \App\Http\Controllers\Admin\StatisticController::class)->except(['create', 'show', 'edit'])->names([
+    Route::resource('statistics', StatisticController::class)->except(['create', 'show', 'edit'])->names([
         'index' => 'admin.statistics.index',
         'store' => 'admin.statistics.store',
         'update' => 'admin.statistics.update',

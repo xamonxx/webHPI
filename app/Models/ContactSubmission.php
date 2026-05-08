@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class ContactSubmission extends Model
 {
@@ -42,7 +42,7 @@ class ContactSubmission extends Model
      */
     public function getFullNameAttribute(): string
     {
-        return trim($this->first_name . ' ' . $this->last_name);
+        return trim($this->first_name.' '.$this->last_name);
     }
 
     /**

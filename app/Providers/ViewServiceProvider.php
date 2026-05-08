@@ -25,12 +25,12 @@ class ViewServiceProvider extends ServiceProvider
     {
         // Share settings globally across ALL views
         View::composer('*', function ($view) {
-            if (!isset($view->getData()['settings'])) {
+            if (! isset($view->getData()['settings'])) {
                 $view->with('settings', SiteSetting::getAllAsArray());
             }
 
             // Share unread messages count for admin panel
-            if (!isset($view->getData()['unreadMessagesCount'])) {
+            if (! isset($view->getData()['unreadMessagesCount'])) {
                 $view->with('unreadMessagesCount', ContactSubmission::unread()->count());
             }
         });

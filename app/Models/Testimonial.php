@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class Testimonial extends Model
 {
@@ -52,7 +52,7 @@ class Testimonial extends Model
      */
     public function getImageUrlAttribute(): ?string
     {
-        if (!$this->client_image) {
+        if (! $this->client_image) {
             return null;
         }
 
@@ -60,7 +60,7 @@ class Testimonial extends Model
             return null;
         }
 
-        return asset('storage/uploads/' . $this->client_image);
+        return asset('storage/uploads/'.$this->client_image);
     }
 
     /**

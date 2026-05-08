@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('hero_sections', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->text('title_highlight')->nullable();
             $table->text('subtitle')->nullable();
             $table->string('background_image')->nullable();
             $table->string('button1_text', 100)->nullable();
