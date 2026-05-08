@@ -13,10 +13,14 @@
     /* Desktop Scrolled State */
     .god-nav.scrolled {
         background-color: rgba(10, 12, 16, 0.98);
-        /* Lebih solid */
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Hide navbar on scroll down */
+    .god-nav.nav-hidden {
+        transform: translateY(-100%);
     }
 
     /* Dropdown CSS - Simple & Reliable */
@@ -82,11 +86,11 @@
 </style>
 
 {{-- NAVBAR WRAPPER --}}
-<nav id="main-nav" class="god-nav fixed top-0 w-full z-99999 transition-all duration-300 bg-transparent h-20 flex items-center">
+<nav id="main-nav" class="god-nav fixed top-0 w-full z-[90] transition-all duration-300 bg-transparent h-20 flex items-center">
     <div class="max-w-7xl w-full mx-auto px-6 lg:px-8 flex items-center justify-between">
 
         {{-- LOGO --}}
-        <a href="{{ route('home') }}" class="flex items-center gap-3 relative z-100000">
+        <a href="{{ route('home') }}" class="flex items-center gap-3 relative z-[91]">
             <div class="w-10 h-10 rounded-xl bg-white/9 flex items-center justify-center border border-white/10 backdrop-blur-sm">
                 <img src="{{ asset('assets/images/logo.png') }}" alt="Home Putra Logo" class="w-[120px] h-auto object-contain" width="120" height="120">
             </div>
@@ -94,14 +98,20 @@
         </a>
 
         {{-- DESKTOP MENU --}}
-        <div class="hidden lg:flex items-center gap-1 z-100000">
+        <div class="hidden lg:flex items-center gap-1 z-[91]">
+            <a href="{{ route('home') }}" class="group/link relative px-2 py-2 text-gray-300 hover:text-white font-medium transition-colors">
+                <span>Beranda</span>
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover/link:w-full"></span>
+            </a>
 
             {{-- Service Dropdown --}}
             <div class="relative group h-20 flex items-center px-2">
                 <a href="{{ route('services.all') }}" class="group/link relative flex items-center gap-1 px-2 py-2 text-gray-300 hover:text-white font-medium transition-colors">
                     <span>Layanan</span>
                     <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover/link:w-full"></span>
-                    <span class="material-symbols-outlined text-[18px] opacity-70 group-hover/link:rotate-180 transition-transform duration-300">expand_more</span>
+                    <svg class="w-4 h-4 opacity-70 group-hover/link:rotate-180 transition-transform duration-300" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </a>
 
                 {{-- Dropdown Body --}}
@@ -128,10 +138,13 @@
                             <img src="{{ asset('assets/images/materials/multipleks-hpl.png') }}" class="absolute inset-0 w-full h-full object-cover opacity-30 transition-transform duration-700 group-hover/card:scale-110" onerror="this.style.display='none'">
                             <div class="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent"></div>
                             <div class="relative p-5 h-full flex flex-col justify-end">
-                                <span class="bg-primary text-black text-[9px] font-bold px-2 py-1 rounded w-fit uppercase mb-2">Featured</span>
+                                <span class="bg-primary text-black text-[9px] font-bold px-2 py-1 rounded w-fit uppercase mb-2">Unggulan</span>
                                 <h3 class="text-white font-serif text-lg mb-1 italic">Luxury Wood</h3>
                                 <a href="{{ route('portfolio.all') }}" class="text-white text-xs font-bold uppercase hover:text-primary transition-colors flex items-center gap-2 mt-2">
-                                    Explore <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                    Jelajahi
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
                                 </a>
                             </div>
                         </div>
@@ -139,24 +152,11 @@
                 </div>
             </div>
 
-            {{-- Portfolio Dropdown --}}
-            <div class="relative group h-20 flex items-center px-2">
-                <a href="{{ route('portfolio.all') }}" class="group/link relative flex items-center gap-1 px-2 py-2 text-gray-300 hover:text-white font-medium transition-colors">
-                    <span>Portfolio</span>
-                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover/link:w-full"></span>
-                    <span class="material-symbols-outlined text-[18px] opacity-70 group-hover/link:rotate-180 transition-transform duration-300">expand_more</span>
-                </a>
-                <div class="god-dropdown absolute top-[70px] left-1/2 -translate-x-1/2 w-[240px] bg-[#0A0C10] border border-white/5 rounded-xl p-2 shadow-2xl backdrop-blur-xl">
-                    <a href="{{ route('portfolio.all') }}" class="block p-3 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-sm transition-all hover:pl-4">Semua Proyek</a>
-                    <a href="{{ route('home') }}#portfolio" class="block p-3 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-sm transition-all hover:pl-4">Living Room</a>
-                    <a href="{{ route('home') }}#portfolio" class="block p-3 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white text-sm transition-all hover:pl-4">Kitchen Set</a>
-                </div>
-            </div>
-
-            <a href="{{ route('home') }}#calculator" class="group/link relative px-2 py-2 text-gray-300 hover:text-white font-medium transition-colors">
-                <span>Kalkulator</span>
+            <a href="{{ route('portfolio.all') }}" class="group/link relative px-2 py-2 text-gray-300 hover:text-white font-medium transition-colors">
+                <span>Portofolio</span>
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover/link:w-full"></span>
             </a>
+
             <a href="{{ route('home') }}#testimonials" class="group/link relative px-2 py-2 text-gray-300 hover:text-white font-medium transition-colors">
                 <span>Testimoni</span>
                 <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover/link:w-full"></span>
@@ -164,8 +164,8 @@
         </div>
 
         {{-- CTA & Toggle --}}
-        <div class="flex items-center gap-4 relative z-100000">
-            <a href="{{ route('home') }}#contact" class="hidden lg:flex px-6 py-2.5 bg-white text-black rounded-full font-bold text-sm hover:bg-primary transition-colors shadow-lg shadow-white/10">
+        <div class="flex items-center gap-4 relative z-[91]">
+            <a href="{{ route('home') }}#contact" class="hidden lg:flex px-6 py-2.5 bg-white text-black rounded-full font-medium tracking-wide text-sm hover:bg-primary hover:scale-105 transition-all shadow-lg shadow-white/10">
                 Konsultasi
             </a>
 
@@ -192,7 +192,9 @@
         <div class="border-b border-white/5">
             <button class="submenu-trigger w-full flex items-center justify-between py-4 text-2xl font-bold text-white hover:text-primary transition-colors">
                 Layanan
-                <span class="mic-icon material-symbols-outlined text-white/30 transition-transform duration-300">expand_more</span>
+                <svg class="mic-icon w-6 h-6 text-white/30 transition-transform duration-300" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
             </button>
             <div class="submenu-content pl-4 pb-4">
                 <div class="flex flex-col gap-3 pl-4 border-l border-white/10">
@@ -204,10 +206,7 @@
         </div>
 
         <a href="{{ route('portfolio.all') }}" class="block w-full py-4 text-2xl font-bold text-white border-b border-white/5 hover:text-primary transition-colors">
-            Portfolio
-        </a>
-        <a href="{{ route('home') }}#calculator" class="block w-full py-4 text-2xl font-bold text-white border-b border-white/5 hover:text-primary transition-colors">
-            Kalkulator
+            Portofolio
         </a>
         <a href="{{ route('home') }}#contact" class="block w-full py-4 text-2xl font-bold text-white border-b border-white/5 hover:text-primary transition-colors">
             Kontak
@@ -284,12 +283,33 @@
             });
         });
 
-        // Scroll Effect
+        // Scroll Effect: hide on scroll down, show on scroll up
+        let lastScrollY = 0;
+        let ticking = false;
+
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 10) nav.classList.add('scrolled');
-            else nav.classList.remove('scrolled');
-        }, {
-            passive: true
-        });
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const currentY = window.scrollY;
+
+                    // Scrolled background
+                    if (currentY > 10) nav.classList.add('scrolled');
+                    else nav.classList.remove('scrolled');
+
+                    // Hide/show on direction (only after 80px, skip if mobile drawer open)
+                    if (!isOpen) {
+                        if (currentY > 80 && currentY > lastScrollY) {
+                            nav.classList.add('nav-hidden');
+                        } else {
+                            nav.classList.remove('nav-hidden');
+                        }
+                    }
+
+                    lastScrollY = currentY;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
     });
 </script>

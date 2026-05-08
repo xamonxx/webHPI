@@ -48,7 +48,7 @@ class Testimonial extends Model
     }
 
     /**
-     * Get client image URL with fallback
+     * Get local client image URL.
      */
     public function getImageUrlAttribute(): ?string
     {
@@ -57,7 +57,7 @@ class Testimonial extends Model
         }
 
         if (filter_var($this->client_image, FILTER_VALIDATE_URL)) {
-            return $this->client_image;
+            return null;
         }
 
         return asset('storage/uploads/' . $this->client_image);

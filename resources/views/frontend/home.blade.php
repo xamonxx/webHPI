@@ -1,7 +1,5 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Desain Interior Premium')
-
 @section('content')
 {{-- Hero Section --}}
 @include('frontend.partials.hero')
@@ -14,9 +12,6 @@
 
 {{-- Services Section --}}
 @include('frontend.partials.services')
-
-{{-- Calculator Section --}}
-@include('frontend.partials.calculator')
 
 {{-- Testimonials Section --}}
 @include('frontend.partials.testimonials')

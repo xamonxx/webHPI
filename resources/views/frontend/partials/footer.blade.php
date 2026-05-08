@@ -28,11 +28,13 @@
                         </svg>
                     </a>
                     @endif
-                    <a href="https://wa.me/{{ $settings['whatsapp_number'] ?? '6281809939681' }}" target="_blank" aria-label="Chat WhatsApp Kami" class="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-green-500/20 text-gray-400 hover:text-green-400 transition-all duration-300">
+                    @if(!empty($settings['whatsapp_number']))
+                    <a href="https://wa.me/{{ $settings['whatsapp_number'] }}" target="_blank" aria-label="Chat WhatsApp Kami" class="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-green-500/20 text-gray-400 hover:text-green-400 transition-all duration-300">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
                         </svg>
                     </a>
+                    @endif
                     @if(!empty($settings['facebook_url']))
                     <a href="{{ $settings['facebook_url'] }}" target="_blank" aria-label="Kunjungi Facebook Kami" class="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-blue-500/20 text-gray-400 hover:text-blue-400 transition-all duration-300">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -47,9 +49,8 @@
             <div data-aos="fade-up" data-aos-delay="100">
                 <h5 class="text-white text-sm font-bold uppercase tracking-widest mb-4">Jelajahi</h5>
                 <nav class="flex flex-col gap-3">
-                    <a href="{{ route('home') }}#portfolio" class="text-gray-400 hover:text-primary text-sm transition-colors">Portfolio</a>
+                    <a href="{{ route('home') }}#portfolio" class="text-gray-400 hover:text-primary text-sm transition-colors">Portofolio</a>
                     <a href="{{ route('home') }}#services" class="text-gray-400 hover:text-primary text-sm transition-colors">Layanan</a>
-                    <a href="{{ route('home') }}#calculator" class="text-gray-400 hover:text-primary text-sm transition-colors">Kalkulator</a>
                     <a href="{{ route('home') }}#testimonials" class="text-gray-400 hover:text-primary text-sm transition-colors">Testimoni</a>
                 </nav>
             </div>
@@ -69,18 +70,24 @@
             <div data-aos="fade-up" data-aos-delay="300">
                 <h5 class="text-white text-sm font-bold uppercase tracking-widest mb-4">Kontak</h5>
                 <div class="flex flex-col gap-3">
+                    @if(!empty($settings['contact_address']))
                     <div class="flex items-start gap-3 text-gray-400 text-sm">
                         <span class="material-symbols-outlined text-primary text-lg shrink-0 mt-0.5">location_on</span>
-                        <span>{{ $settings['contact_address'] ?? 'Jl. Desain No. 123, Jakarta' }}</span>
+                        <span>{{ $settings['contact_address'] }}</span>
                     </div>
+                    @endif
+                    @if(!empty($settings['contact_email']))
                     <div class="flex items-center gap-3 text-gray-400 text-sm">
                         <span class="material-symbols-outlined text-primary text-lg shrink-0">mail</span>
-                        <span>{{ $settings['contact_email'] ?? 'hello@homeputra.com' }}</span>
+                        <span>{{ $settings['contact_email'] }}</span>
                     </div>
+                    @endif
+                    @if(!empty($settings['contact_phone']))
                     <div class="flex items-center gap-3 text-gray-400 text-sm">
                         <span class="material-symbols-outlined text-primary text-lg shrink-0">phone</span>
-                        <span>{{ $settings['contact_phone'] ?? '+62 812 3456 7890' }}</span>
+                        <span>{{ $settings['contact_phone'] }}</span>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -88,10 +95,10 @@
         {{-- Copyright --}}
         <div class="pt-6 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
             <p class="text-xs text-gray-400">
-                © {{ date('Y') }} Home Putra Interior. Hak Cipta Dilindungi.
+                &copy; {{ date('Y') }} Home Putra Interior. Hak Cipta Dilindungi.
             </p>
             <p class="text-xs text-gray-400">
-                Designed with <span class="text-primary">♥</span> for Interior Excellence
+                Didesain untuk Keunggulan Interior
             </p>
         </div>
     </div>

@@ -28,18 +28,19 @@
     {{-- Hero Preview Card --}}
     <div class="bg-[#12141A] border border-white/5 rounded-2xl overflow-hidden">
         <div class="relative h-64 bg-cover bg-center"
-            style="background-image: url('{{ $hero->background_url }}');">
+            @if($hero->background_url) style="background-image: url('{{ $hero->background_url }}');" @endif>
             <div class="absolute inset-0 bg-linear-to-r from-black/90 via-black/50 to-transparent"></div>
             <div class="absolute inset-0 bg-linear-to-t from-background-dark via-transparent to-black/40"></div>
             <div class="relative z-10 p-8 flex flex-col justify-center h-full max-w-xl">
-                <span class="text-primary text-xs font-bold uppercase tracking-widest mb-4">#1 Jasa Interior Design</span>
                 <h2 class="text-2xl md:text-3xl font-bold text-white mb-3">
-                    {{ $hero->title }}
+                    {{ $hero->title ?: 'Hero belum diisi' }}
                     @if($hero->title_highlight)
                     <span class="text-gold-gradient italic font-serif">{{ $hero->title_highlight }}</span>
                     @endif
                 </h2>
+                @if($hero->subtitle)
                 <p class="text-gray-300 text-sm line-clamp-2">{{ $hero->subtitle }}</p>
+                @endif
             </div>
             <div class="absolute top-4 right-4 z-20">
                 <span class="px-3 py-1 rounded-full text-xs font-bold {{ $hero->is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400' }}">
@@ -67,7 +68,7 @@
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Judul Utama (Putih)</label>
                     <input type="text" name="title" value="{{ old('title', $hero->title) }}"
                         class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
-                        placeholder="Mendefinisikan Ruang,">
+                        placeholder="Judul utama hero">
                     @error('title')
                     <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -78,7 +79,7 @@
                     <label class="block text-xs font-bold text-primary uppercase tracking-wider mb-2">Judul Highlight (Gold/Italic)</label>
                     <input type="text" name="title_highlight" value="{{ old('title_highlight', $hero->title_highlight) }}"
                         class="w-full px-4 py-3 bg-white/5 border border-primary/30 rounded-xl text-primary font-serif italic placeholder-gray-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
-                        placeholder="Meningkatkan Gaya Hidup">
+                        placeholder="Teks highlight">
                     <p class="text-gray-500 text-xs mt-1">Teks ini akan muncul berwarna emas dan italic setelah judul utama.</p>
                 </div>
 
@@ -87,7 +88,7 @@
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Deskripsi / Subtitle</label>
                     <textarea name="subtitle" rows="4"
                         class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all resize-none"
-                        placeholder="Deskripsi singkat yang menarik...">{{ old('subtitle', $hero->subtitle) }}</textarea>
+                        placeholder="Deskripsi singkat hero">{{ old('subtitle', $hero->subtitle) }}</textarea>
                     @error('subtitle')
                     <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -122,7 +123,7 @@
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Teks Tombol 1</label>
                             <input type="text" name="button1_text" value="{{ old('button1_text', $hero->button1_text) }}"
                                 class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary/50 transition-all"
-                                placeholder="Lihat Portfolio">
+                                placeholder="Teks tombol">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Link Tombol 1</label>
@@ -136,13 +137,13 @@
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Teks Tombol 2</label>
                             <input type="text" name="button2_text" value="{{ old('button2_text', $hero->button2_text) }}"
                                 class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary/50 transition-all"
-                                placeholder="Konsultasi Gratis">
+                                placeholder="Teks tombol">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Link Tombol 2</label>
                             <input type="text" name="button2_link" value="{{ old('button2_link', $hero->button2_link) }}"
                                 class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary/50 transition-all"
-                                placeholder="https://wa.me/...">
+                                placeholder="URL internal atau halaman tujuan">
                         </div>
                     </div>
                 </div>
@@ -156,7 +157,13 @@
 
                     {{-- Current Image Preview --}}
                     <div class="relative aspect-video rounded-xl overflow-hidden bg-black/50">
+                        @if($hero->background_url)
                         <img src="{{ $hero->background_url }}" alt="Hero Background" class="w-full h-full object-cover">
+                        @else
+                        <div class="w-full h-full flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary/60 text-6xl">image</span>
+                        </div>
+                        @endif
                         <div class="absolute inset-0 bg-black/30"></div>
                     </div>
 
@@ -168,23 +175,6 @@
                         <p class="text-gray-500 text-xs mt-1">Format: JPEG, PNG, WebP. Maksimal 5MB. Rekomendasi: 1920x1080px</p>
                     </div>
 
-                    {{-- Or Use URL --}}
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-white/10"></div>
-                        </div>
-                        <div class="relative flex justify-center">
-                            <span class="px-3 bg-[#12141A] text-gray-500 text-xs">atau gunakan URL</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">URL Gambar</label>
-                        <input type="url" name="background_url" value="{{ filter_var($hero->background_image, FILTER_VALIDATE_URL) ? $hero->background_image : '' }}"
-                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary/50 transition-all"
-                            placeholder="https://images.unsplash.com/...">
-                        <p class="text-gray-500 text-xs mt-1">Gunakan URL gambar dari Unsplash, Pexels, atau sumber lain</p>
-                    </div>
                 </div>
             </div>
         </div>

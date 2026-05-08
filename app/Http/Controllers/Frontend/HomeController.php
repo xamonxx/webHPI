@@ -28,10 +28,12 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
-        // Get Featured/Active Portfolios (first 6)
+        // Get Featured/Active Portfolios in curated display order
         $portfolios = Portfolio::active()
+            ->with('photos')
+            ->featured()
             ->ordered()
-            ->limit(6)
+            ->limit(4)
             ->get();
 
         // Get Active Services

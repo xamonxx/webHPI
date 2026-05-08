@@ -48,7 +48,7 @@
 
                     {{-- Icon --}}
                     <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl {{ $color[0] }} flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <span class="material-symbols-outlined {{ $color[1] }} text-2xl sm:text-3xl">{{ $service->icon ?? $icons[$index % count($icons)] }}</span>
+                        <span class="material-symbols-outlined {{ $color[1] }} text-2xl sm:text-3xl">{{ $service->icon ?: $icons[$index % count($icons)] }}</span>
                     </div>
 
                     {{-- Number --}}
@@ -63,53 +63,16 @@
                     {{-- CTA --}}
                     <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-2 text-primary text-sm font-medium group-hover:gap-3 transition-all">
                         <span>Konsultasi</span>
-                        <span class="material-symbols-outlined text-base">arrow_forward</span>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                     </a>
                 </div>
             </div>
             @empty
-            {{-- Fallback Services --}}
-            @foreach([
-            ['title' => 'Desain Residensial', 'description' => 'Renovasi skala penuh dan desain bangunan baru untuk rumah mewah, fokus pada aliran ruang, pencahayaan, dan materialitas.', 'icon' => 'home'],
-            ['title' => 'Ruang Komersial', 'description' => 'Menciptakan pengalaman brand yang berdampak melalui desain tata ruang cerdas untuk ritel, perhotelan, dan kantor.', 'icon' => 'storefront'],
-            ['title' => 'Furniture Custom', 'description' => 'Desain dan koordinasi fabrikasi furniture eksklusif untuk memastikan setiap produk cocok sempurna dengan ruang Anda.', 'icon' => 'chair'],
-            ['title' => 'Konsultasi Desain', 'description' => 'Konsultasi profesional untuk membantu Anda merencanakan proyek interior dengan budget dan timeline yang tepat.', 'icon' => 'chat'],
-            ['title' => 'Interior Apartemen', 'description' => 'Maksimalkan ruang apartemen Anda dengan desain fungsional yang tetap estetis dan nyaman untuk hunian modern.', 'icon' => 'apartment'],
-            ['title' => 'Renovasi Total', 'description' => 'Layanan renovasi menyeluruh dari struktur hingga finishing, mengubah ruang lama menjadi hunian impian baru.', 'icon' => 'design_services'],
-            ] as $index => $service)
-            @php
-            $colors = [
-            ['bg-primary/20', 'text-primary'],
-            ['bg-blue-500/20', 'text-blue-400'],
-            ['bg-purple-500/20', 'text-purple-400'],
-            ['bg-emerald-500/20', 'text-emerald-400'],
-            ['bg-rose-500/20', 'text-rose-400'],
-            ['bg-amber-500/20', 'text-amber-400'],
-            ];
-            $color = $colors[$index % count($colors)];
-            $delay = ($index % 3) * 100;
-            @endphp
-            <div class="group relative" data-aos="fade-up" data-aos-delay="{{ $delay }}">
-                <div class="h-full p-6 sm:p-8 bg-white/5 border border-white/10 rounded-2xl hover:border-primary/30 hover:bg-white/8 transition-all duration-300">
-
-                    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl {{ $color[0] }} flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
-                        <span class="material-symbols-outlined {{ $color[1] }} text-2xl sm:text-3xl">{{ $service['icon'] }}</span>
-                    </div>
-
-                    <span class="text-white/10 text-5xl sm:text-6xl font-bold absolute top-4 right-4 group-hover:text-primary/10 transition-colors">0{{ $index + 1 }}</span>
-
-                    <h3 class="text-lg sm:text-xl text-white font-semibold mb-2 sm:mb-3 group-hover:text-primary transition-colors">{{ $service['title'] }}</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed mb-4 sm:mb-6 group-hover:text-gray-400 transition-colors">
-                        {{ $service['description'] }}
-                    </p>
-
-                    <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-2 text-primary text-sm font-medium group-hover:gap-3 transition-all">
-                        <span>Konsultasi</span>
-                        <span class="material-symbols-outlined text-base">arrow_forward</span>
-                    </a>
-                </div>
+            <div class="col-span-full text-center py-12 text-gray-500">
+                Belum ada layanan yang ditampilkan.
             </div>
-            @endforeach
             @endforelse
         </div>
 
@@ -150,14 +113,14 @@
                 <div class="relative z-10 text-center max-w-2xl mx-auto">
                     <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary/30 rounded-full mb-4 sm:mb-6">
                         <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
-                        <span class="text-primary text-xs font-bold uppercase tracking-wider">Free Consultation</span>
+                        <span class="text-primary text-xs font-bold uppercase tracking-wider">Konsultasi Gratis</span>
                     </div>
 
                     <h2 class="text-2xl sm:text-3xl md:text-4xl text-white font-serif mb-4">
                         Siap Wujudkan Interior <span class="text-primary">Impian Anda?</span>
                     </h2>
                     <p class="text-gray-400 text-sm sm:text-base mb-6 sm:mb-8">
-                        Konsultasi gratis dengan tim desainer profesional kami. Dapatkan estimasi biaya dalam 24 jam.
+                        Konsultasi gratis dengan tim desainer profesional kami. Dapatkan arahan proyek yang jelas dalam 24 jam.
                     </p>
 
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
@@ -165,27 +128,12 @@
                             <span class="material-symbols-outlined">chat</span>
                             <span>Konsultasi Gratis</span>
                         </a>
-                        <a href="{{ route('home') }}#calculator" class="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white/5 border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all">
-                            <span class="material-symbols-outlined">calculate</span>
-                            <span>Hitung Estimasi</span>
+                        <a href="{{ route('portfolio.all') }}" class="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white/5 border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all">
+                            <span class="material-symbols-outlined">photo_library</span>
+                            <span>Lihat Portofolio</span>
                         </a>
                     </div>
 
-                    {{-- Trust badges --}}
-                    <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-8 pt-6 border-t border-white/10">
-                        <div class="flex items-center gap-2 text-gray-400 text-xs sm:text-sm">
-                            <span class="material-symbols-outlined text-primary text-base sm:text-lg">verified</span>
-                            <span>12+ Tahun</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-gray-400 text-xs sm:text-sm">
-                            <span class="material-symbols-outlined text-primary text-base sm:text-lg">workspace_premium</span>
-                            <span>Garansi 2 Tahun</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-gray-400 text-xs sm:text-sm">
-                            <span class="material-symbols-outlined text-primary text-base sm:text-lg">thumb_up</span>
-                            <span>500+ Proyek</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

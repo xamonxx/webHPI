@@ -1,44 +1,25 @@
 {{-- Statistics Section - Premium Responsive Design --}}
 
-<section class="border-y border-white/5 bg-[#0d0f14] py-12 sm:py-16">
+<section class="border-y border-white/5 bg-[#0d0f14] py-8 sm:py-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            @forelse($statistics as $index => $stat)
-            <div class="flex flex-col items-center justify-center text-center gap-2 group" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+        @if(isset($statistics) && $statistics->count() > 0)
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            @foreach($statistics as $index => $stat)
+            <div class="flex flex-col items-center justify-center text-center gap-1.5 group" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
                 <div class="flex items-baseline gap-1">
-                    <span class="font-serif text-4xl sm:text-5xl md:text-6xl text-white font-medium group-hover:text-primary transition-colors duration-300">
+                    <span class="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-medium group-hover:text-primary transition-colors duration-300">
                         <span class="counter" data-target="{{ $stat->stat_number ?? 0 }}">0</span>
                     </span>
-                    <span class="text-2xl sm:text-3xl text-primary font-serif italic">{{ $stat->stat_suffix ?? '+' }}</span>
+                    <span class="text-xl sm:text-2xl text-primary font-serif italic">{{ $stat->stat_suffix ?? '+' }}</span>
                 </div>
-                <div class="h-[2px] w-12 bg-white/10 group-hover:bg-primary group-hover:w-20 transition-all duration-300 my-2"></div>
-                <span class="text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-gray-200 transition-colors">
-                    {{ $stat->stat_label ?? 'Statistic' }}
-                </span>
-            </div>
-            @empty
-            {{-- Fallbacks --}}
-            @foreach([
-            ['num' => 500, 'suffix' => '+', 'label' => 'Proyek Selesai'],
-            ['num' => 12, 'suffix' => 'Th', 'label' => 'Pengalaman'],
-            ['num' => 98, 'suffix' => '%', 'label' => 'Kepuasan'],
-            ['num' => 25, 'suffix' => '+', 'label' => 'Penghargaan']
-            ] as $idx => $s)
-            <div class="flex flex-col items-center justify-center text-center gap-2 group" data-aos="fade-up" data-aos-delay="{{ $idx * 100 }}">
-                <div class="flex items-baseline gap-1">
-                    <span class="font-serif text-4xl sm:text-5xl md:text-6xl text-white font-medium group-hover:text-primary transition-colors duration-300">
-                        <span class="counter" data-target="{{ $s['num'] }}">0</span>
-                    </span>
-                    <span class="text-2xl sm:text-3xl text-primary font-serif italic">{{ $s['suffix'] }}</span>
-                </div>
-                <div class="h-[2px] w-12 bg-white/10 group-hover:bg-primary group-hover:w-20 transition-all duration-300 my-2"></div>
-                <span class="text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-gray-200 transition-colors">
-                    {{ $s['label'] }}
+                <div class="h-[2px] w-8 bg-white/10 group-hover:bg-primary group-hover:w-12 transition-all duration-300 my-1.5"></div>
+                <span class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-gray-200 transition-colors">
+                    {{ $stat->stat_label ?? 'Statistik' }}
                 </span>
             </div>
             @endforeach
-            @endforelse
         </div>
+        @endif
     </div>
 </section>
 

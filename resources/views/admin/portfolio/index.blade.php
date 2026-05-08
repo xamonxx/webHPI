@@ -7,7 +7,7 @@
 
 {{-- Stats & Quick Actions --}}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="glass-card p-6 rounded-2xl border border-white/5 bg-blue-500/5 relative overflow-hidden group">
+    <div class="glass-card p-5 sm:p-6 rounded-2xl border border-white/5 bg-blue-500/5 relative overflow-hidden group">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition-colors"></div>
         <div class="relative z-10">
             <h3 class="text-3xl font-bold text-white mb-1">{{ $totalPortfolios ?? 0 }}</h3>
@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="md:col-span-2 glass-card p-6 rounded-2xl border border-white/5 flex flex-col justify-center items-start">
+    <div class="md:col-span-2 glass-card p-5 sm:p-6 rounded-2xl border border-white/5 flex flex-col justify-center items-start">
         <h3 class="text-lg font-bold text-white mb-2">Kelola Galeri Project</h3>
         <p class="text-gray-400 text-sm mb-4 max-w-xl">Upload dan atur dokumentasi project terbaru untuk ditampilkan di halaman depan website.</p>
         <a href="{{ route('admin.portfolio.create') }}" class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-black font-bold rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-1 transition-all flex items-center gap-2">
@@ -32,13 +32,13 @@
 {{-- Main Content --}}
 <div class="glass-card rounded-2xl border border-white/5 overflow-hidden">
     {{-- Toolbar --}}
-    <div class="p-6 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="p-4 sm:p-6 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 focus-within:border-primary/50 focus-within:bg-white/10 transition-all w-full md:w-80">
             <span class="material-symbols-outlined text-gray-400">search</span>
             <input type="text" placeholder="Cari nama project, kategori..." class="bg-transparent border-none text-white text-sm w-full focus:outline-none placeholder-gray-500">
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 overflow-x-auto pb-1 md:pb-0">
             <button class="flex items-center gap-2 px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm text-gray-300 hover:text-white transition-colors">
                 <span class="material-symbols-outlined text-lg">filter_list</span>
                 Filter
@@ -52,7 +52,7 @@
 
     {{-- Table --}}
     <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table class="w-full min-w-[920px] text-left border-collapse">
             <thead>
                 <tr class="bg-white/5 text-gray-400 text-xs uppercase tracking-wider font-semibold border-b border-white/5">
                     <th class="p-6 w-20 text-center">No</th>
@@ -65,19 +65,32 @@
             </thead>
             <tbody class="divide-y divide-white/5 text-sm">
                 @forelse($portfolios as $index => $item)
+                @php
+                    $photoCount = $item->photos->count() ?: count($item->all_images);
+                @endphp
                 <tr class="group hover:bg-white/2 transition-colors">
                     <td class="p-6 text-center text-gray-500 font-mono">{{ $loop->iteration }}</td>
 
                     <td class="p-6">
                         <div class="flex items-center gap-4">
-                            <div class="w-16 h-12 bg-gray-800 rounded-lg overflow-hidden border border-white/10 relative">
-                                <img src="{{ asset('storage/' . $item->image) }}"
+                            <div class="w-16 h-12 bg-gray-800 rounded-lg overflow-hidden border border-white/10 relative shrink-0">
+                                @if($item->image_url)
+                                <img src="{{ $item->image_url }}"
                                     alt="{{ $item->title }}"
-                                    class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                                    class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                    loading="lazy">
+                                @else
+                                <div class="w-full h-full flex items-center justify-center bg-white/5 text-[10px] font-bold uppercase tracking-[0.16em] text-gray-500">
+                                    No Image
+                                </div>
+                                @endif
+                                @if($photoCount > 1)
+                                <span class="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white">{{ $photoCount }} foto</span>
+                                @endif
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <h4 class="font-bold text-white group-hover:text-primary transition-colors text-base">{{ $item->title }}</h4>
-                                <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">Lokasi: {{ $item->location ?? '-' }}</p>
+                                <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">{{ $item->description ?: 'Belum ada deskripsi.' }}</p>
                             </div>
                         </div>
                     </td>
@@ -107,12 +120,16 @@
 
                     <td class="p-6">
                         <div class="flex items-center justify-end gap-2">
+                            <a href="{{ route('portfolio.show', $item->id) }}" target="_blank" class="p-2 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white transition-colors" title="Lihat">
+                                <span class="material-symbols-outlined text-lg">visibility</span>
+                            </a>
                             <a href="{{ route('admin.portfolio.edit', $item->id) }}" class="p-2 rounded-lg text-blue-400 hover:bg-blue-500/10 hover:text-blue-300 transition-colors" title="Edit">
                                 <span class="material-symbols-outlined text-lg">edit</span>
                             </a>
 
                             <button type="button"
-                                onclick="openDeleteModal('{{ $item->id }}', '{{ $item->title }}')"
+                                data-delete-url="{{ route('admin.portfolio.destroy', $item->id) }}"
+                                data-delete-name="{{ $item->title }}"
                                 class="p-2 rounded-lg text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors" title="Hapus">
                                 <span class="material-symbols-outlined text-lg">delete</span>
                             </button>
@@ -198,14 +215,13 @@
 
 @push('scripts')
 <script>
-    function openDeleteModal(id, name) {
+    function openDeleteModal(url, name) {
         const modal = document.getElementById('deleteModal');
         const modalContent = document.getElementById('deleteModalContent');
         const deleteForm = document.getElementById('deleteForm');
         const deleteItemName = document.getElementById('deleteItemName');
 
-        // Set the form action and item name
-        deleteForm.action = `/admin/portfolio/${id}`;
+        deleteForm.action = url;
         deleteItemName.textContent = name;
 
         // Show modal
@@ -218,6 +234,12 @@
             modalContent.classList.add('scale-100', 'opacity-100');
         }, 10);
     }
+
+    document.querySelectorAll('[data-delete-url]').forEach((button) => {
+        button.addEventListener('click', () => {
+            openDeleteModal(button.dataset.deleteUrl, button.dataset.deleteName);
+        });
+    });
 
     function closeDeleteModal() {
         const modal = document.getElementById('deleteModal');

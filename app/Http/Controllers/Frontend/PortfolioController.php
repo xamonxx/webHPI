@@ -16,7 +16,7 @@ class PortfolioController extends Controller
     {
         $category = $request->get('category');
 
-        $query = Portfolio::active()->ordered();
+        $query = Portfolio::active()->with('photos')->ordered();
 
         if ($category) {
             $query->where('category', $category);
@@ -42,11 +42,35 @@ class PortfolioController extends Controller
      */
     public function show(Portfolio $portfolio): View
     {
+        $portfolio->load('photos');
+
         // Only show if active
         if (!$portfolio->is_active) {
             abort(404);
         }
 
-        return view('frontend.portfolio-detail', compact('portfolio'));
+        $related = Portfolio::active()
+            ->with('photos')
+            ->where('id', '!=', $portfolio->id)
+            ->when($portfolio->category, function ($query) use ($portfolio) {
+                $query->where('category', $portfolio->category);
+            })
+            ->ordered()
+            ->limit(4)
+            ->get();
+
+        if ($related->count() < 4) {
+            $fallback = Portfolio::active()
+                ->with('photos')
+                ->where('id', '!=', $portfolio->id)
+                ->whereNotIn('id', $related->pluck('id'))
+                ->ordered()
+                ->limit(4 - $related->count())
+                ->get();
+
+            $related = $related->merge($fallback);
+        }
+
+        return view('frontend.portfolio-detail', compact('portfolio', 'related'));
     }
 }

@@ -32,16 +32,20 @@ class HeroSection extends Model
     }
 
     /**
-     * Get background image URL with fallback
+     * Get local background image URL.
      */
-    public function getBackgroundUrlAttribute(): string
+    public function getBackgroundUrlAttribute(): ?string
     {
         if (!$this->background_image) {
-            return 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80';
+            return null;
         }
 
         if (filter_var($this->background_image, FILTER_VALIDATE_URL)) {
-            return $this->background_image;
+            return null;
+        }
+
+        if (str_contains($this->background_image, '/')) {
+            return asset($this->background_image);
         }
 
         return asset('storage/uploads/' . $this->background_image);

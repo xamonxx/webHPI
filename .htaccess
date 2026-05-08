@@ -1,15 +1,60 @@
+# ------------------------------------------------------------------------------
+# 1. SECURITY & PERFORMANCE HEADERS
+# ------------------------------------------------------------------------------
+<IfModule mod_headers.c>
+    # Mencegah website di-iframe oleh situs lain (Clickjacking protection)
+    Header set X-Frame-Options "SAMEORIGIN"
+    # Mencegah browser menebak jenis file (MIME sniffing)
+    Header set X-Content-Type-Options "nosniff"
+    # Mengaktifkan proteksi XSS di browser lama
+    Header set X-XSS-Protection "1; mode=block"
+    # Keamanan referer
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ------------------------------------------------------------------------------
+# 2. BLOCK ACCESS TO SENSITIVE FILES
+# ------------------------------------------------------------------------------
+# Nonaktifkan listing direktori (agar orang tidak bisa melihat isi folder)
+Options -Indexes
+
+# Blokir akses ke file sensitif (Dotfiles, env, composer, dll)
+# Menggunakan sintaks Apache 2.4 (Require all denied) untuk mencegah Error 500
+<FilesMatch "^\.(env|git|svn)">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|README\.md|artisan|vite\.config\.js|webpack\.mix\.js)$">
+    Require all denied
+</FilesMatch>
+
+# Blokir ekstensi file backup/log
+<FilesMatch "\.(bak|old|sql|log|sh)$">
+    Require all denied
+</FilesMatch>
+
+# ------------------------------------------------------------------------------
+# 3. LARAVEL ROUTING (SHARED HOSTING FIX)
+# ------------------------------------------------------------------------------
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
+
+    # Paksa HTTPS (Opsional - Hapus tanda pagar jika belum ada auto-ssl dari hosting)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # --- PENTING: Arahkan traffic ke folder public/ ---
     
-    # Serve existing files directly
+    # 1. Jika request mengarah ke folder public/, biarkan apa adanya (hindari loop)
+    RewriteRule ^public/ - [L]
+
+    # 2. Jika request adalah file atau folder yang BENAR-BENAR ada di root, layani langsung
+    # (Ini penting untuk validasi Google, sitemap.xml di root, dll)
     RewriteCond %{REQUEST_FILENAME} -f
-    RewriteRule ^ - [L]
-    
-    # Serve existing directories directly
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
-    
-    # Route everything else to public/index.php
-    RewriteRule ^ public/index.php [L]
+
+    # 3. Alihkan semua request lain ke folder public/
+    RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>

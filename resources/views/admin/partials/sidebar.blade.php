@@ -30,7 +30,6 @@
         <x-admin-nav-link route="admin.testimonials.index" icon="rate_review" label="Testimoni" active="admin.testimonials.*" />
         <x-admin-nav-link route="admin.statistics.index" icon="analytics" label="Statistik" active="admin.statistics.*" />
         <x-admin-nav-link route="admin.messages.index" icon="mail" label="Inbox Pesan" active="admin.messages.*" />
-        <x-admin-nav-link route="#" icon="calculate" label="Kalkulator" />
 
         <p class="px-4 text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mt-8 mb-3">Sistem</p>
         <x-admin-nav-link route="admin.settings.index" icon="settings" label="Pengaturan" active="admin.settings.*" />

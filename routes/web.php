@@ -28,12 +28,6 @@ Route::get('/portfolio/{portfolio}', [PortfolioController::class, 'show'])->name
 // Services
 Route::get('/services', [ServiceController::class, 'index'])->name('services.all');
 
-// Calculator Page (standalone)
-Route::get('/calculator', function () {
-    $settings = \App\Models\SiteSetting::first();
-    return view('frontend.calculator', compact('settings'));
-})->name('calculator');
-
 // Pricing Info Page
 Route::get('/pricing-info', function () {
     return view('frontend.pricing-info');
@@ -48,6 +42,5 @@ Route::get('/login', function () {
 
 // --- SITEMAP FOR SEO ---
 require __DIR__ . '/sitemap.php';
-
 
 

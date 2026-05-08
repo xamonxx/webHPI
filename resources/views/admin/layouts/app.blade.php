@@ -7,10 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - Admin Panel | Home Putra Interior</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Local Fonts -->
+    <link href="{{ asset('assets/css/fonts.css') }}" rel="stylesheet">
 
     <!-- Icons -->
     <link href="{{ asset('assets/css/material-symbols.css') }}" rel="stylesheet">
@@ -23,7 +21,7 @@
     <style>
         /* Admin Specific Overrides */
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Montserrat', sans-serif;
         }
 
         /* Custom Scrollbar */
@@ -57,6 +55,7 @@
 </head>
 
 <body class="bg-background-dark min-h-screen text-gray-300 overflow-x-hidden selection:bg-primary/30 selection:text-white">
+    <div id="admin-toast-container" class="fixed top-5 right-5 z-[99999] flex w-full max-w-sm flex-col gap-3 pointer-events-none"></div>
 
     <!-- Background Decor -->
     <div class="fixed inset-0 z-0 pointer-events-none">
@@ -102,6 +101,58 @@
     </div>
 
     @stack('scripts')
+    <script>
+        window.showAdminToast = function(message, type = 'error') {
+            if (!message) return;
+
+            const container = document.getElementById('admin-toast-container');
+            if (!container) return;
+
+            const palette = {
+                success: 'border-green-500/30 bg-green-500/15 text-green-300',
+                error: 'border-red-500/30 bg-red-500/15 text-red-300',
+                info: 'border-blue-500/30 bg-blue-500/15 text-blue-300',
+            };
+
+            const icons = {
+                success: 'check_circle',
+                error: 'error',
+                info: 'info',
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto translate-x-6 opacity-0 transition-all duration-300 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur-xl ${palette[type] || palette.error}`;
+            toast.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-lg leading-none mt-0.5">${icons[type] || icons.error}</span>
+                    <p class="text-sm font-medium leading-relaxed">${message}</p>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-x-6', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-6', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const notifications = [
+                { message: @json(session('success')), type: 'success' },
+                { message: @json(session('error')), type: 'error' },
+                { message: @json($errors->first()), type: 'error' },
+            ];
+
+            notifications
+                .filter(item => item.message)
+                .forEach(item => window.showAdminToast(item.message, item.type));
+        });
+    </script>
 </body>
 
 </html>

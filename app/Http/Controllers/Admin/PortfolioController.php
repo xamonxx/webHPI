@@ -3,132 +3,266 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PortfolioRequest;
 use App\Models\Portfolio;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
+use Throwable;
 
 class PortfolioController extends Controller
 {
-    /**
-     * Display a listing of portfolios
-     */
+    private const MAX_PHOTOS = 5;
+    private const PHOTO_DISK = 'public';
+    private const PHOTO_DIRECTORY = 'portfolio';
+
     public function index(): View
     {
-        $portfolios = Portfolio::ordered()->paginate(10);
-        return view('admin.portfolio.index', compact('portfolios'));
+        $portfolios = Portfolio::query()
+            ->with('photos')
+            ->ordered()
+            ->paginate(10);
+
+        $totalPortfolios = Portfolio::count();
+
+        return view('admin.portfolio.index', compact('portfolios', 'totalPortfolios'));
     }
 
-    /**
-     * Show the form for creating a new portfolio
-     */
     public function create(): View
     {
         return view('admin.portfolio.create');
     }
 
-    /**
-     * Store a newly created portfolio
-     */
-    public function store(Request $request): RedirectResponse
+    public function store(PortfolioRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'category' => 'nullable|string|max:100',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'display_order' => 'nullable|integer',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
+        $storedPaths = [];
 
-        // Handle defaults
-        $validated['is_featured'] = $request->boolean('is_featured');
-        $validated['is_active'] = $request->boolean('is_active', true);
-        $validated['display_order'] = $validated['display_order'] ?? 0;
+        try {
+            $storedPaths = $this->storeUploadedPhotos($request->file('photos', []));
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')
-                ->store('portfolio', 'public');
+            DB::transaction(function () use ($validated, $request, $storedPaths) {
+                $portfolio = Portfolio::create($this->portfolioPayload($validated, $request, $storedPaths));
+                $this->createPhotoRows($portfolio, $storedPaths);
+            });
+        } catch (Throwable $exception) {
+            $this->deleteFiles($storedPaths);
+            Log::error('Portfolio upload failed during create.', [
+                'message' => $exception->getMessage(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Upload gagal, silakan coba lagi.')
+                ->withErrors(['photos' => 'Upload gagal, silakan coba lagi.']);
         }
-
-        Portfolio::create($validated);
 
         return redirect()
             ->route('admin.portfolio.index')
             ->with('success', 'Portfolio berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified portfolio
-     */
     public function show(Portfolio $portfolio): View
     {
+        $portfolio->load('photos');
+
         return view('admin.portfolio.show', compact('portfolio'));
     }
 
-    /**
-     * Show the form for editing the specified portfolio
-     */
     public function edit(Portfolio $portfolio): View
     {
+        $portfolio->load('photos');
+
         return view('admin.portfolio.edit', compact('portfolio'));
     }
 
-    /**
-     * Update the specified portfolio
-     */
-    public function update(Request $request, Portfolio $portfolio): RedirectResponse
+    public function update(PortfolioRequest $request, Portfolio $portfolio): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'category' => 'nullable|string|max:100',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'display_order' => 'nullable|integer',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
-        ]);
+        $portfolio->load('photos');
 
-        // Handle defaults
-        $validated['is_featured'] = $request->boolean('is_featured');
-        $validated['is_active'] = $request->boolean('is_active');
-        $validated['display_order'] = $validated['display_order'] ?? $portfolio->display_order;
+        $validated = $request->validated();
+        $newPaths = [];
+        $pathsToDeleteAfterCommit = [];
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            // Delete old image
-            if ($portfolio->image && !filter_var($portfolio->image, FILTER_VALIDATE_URL)) {
-                Storage::disk('public')->delete($portfolio->image);
-            }
+        $currentPhotoIds = $portfolio->photos->pluck('id');
 
-            $validated['image'] = $request->file('image')
-                ->store('portfolio', 'public');
+        $existingPhotoIds = collect($validated['existing_photos'] ?? $currentPhotoIds->all())
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->intersect($currentPhotoIds);
+
+        $removedPhotoIds = collect($validated['removed_photos'] ?? [])
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->intersect($currentPhotoIds);
+
+        $keptPhotoIds = $existingPhotoIds->diff($removedPhotoIds)->values();
+        $newFiles = $request->file('photos', []);
+        $newFileCount = is_array($newFiles) ? count($newFiles) : 0;
+        $finalPhotoCount = $keptPhotoIds->count() + $newFileCount;
+
+        if ($finalPhotoCount > self::MAX_PHOTOS) {
+            return back()
+                ->withInput()
+                ->withErrors(['photos' => 'Maksimal upload 5 foto.'])
+                ->with('error', 'Maksimal upload 5 foto.');
         }
 
-        $portfolio->update($validated);
+        if ($finalPhotoCount < 1) {
+            return back()
+                ->withInput()
+                ->withErrors(['photos' => 'Foto wajib berupa gambar.'])
+                ->with('error', 'Foto wajib berupa gambar.');
+        }
+
+        try {
+            $newPaths = $this->storeUploadedPhotos($newFiles);
+
+            DB::transaction(function () use (
+                $portfolio,
+                $validated,
+                $request,
+                $keptPhotoIds,
+                $removedPhotoIds,
+                $newPaths,
+                &$pathsToDeleteAfterCommit
+            ) {
+                $photoQuery = $portfolio->photos();
+
+                $pathsToDeleteAfterCommit = $photoQuery
+                    ->whereIn('id', $removedPhotoIds)
+                    ->pluck('path')
+                    ->all();
+
+                if ($removedPhotoIds->isNotEmpty()) {
+                    $photoQuery->whereIn('id', $removedPhotoIds)->delete();
+                }
+
+                $nextOrder = $portfolio->photos()->max('sort_order') ?: 0;
+                foreach ($newPaths as $path) {
+                    $portfolio->photos()->create([
+                        'path' => $path,
+                        'sort_order' => ++$nextOrder,
+                    ]);
+                }
+
+                $portfolio->load('photos');
+                $orderedPaths = $portfolio->photos
+                    ->sortBy('sort_order')
+                    ->pluck('path')
+                    ->values()
+                    ->all();
+
+                $portfolio->update($this->portfolioPayload($validated, $request, $orderedPaths));
+            });
+        } catch (Throwable $exception) {
+            $this->deleteFiles($newPaths);
+            Log::error('Portfolio upload failed during update.', [
+                'portfolio_id' => $portfolio->id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Upload gagal, silakan coba lagi.')
+                ->withErrors(['photos' => 'Upload gagal, silakan coba lagi.']);
+        }
+
+        $this->deleteFiles($pathsToDeleteAfterCommit);
 
         return redirect()
             ->route('admin.portfolio.index')
             ->with('success', 'Portfolio berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified portfolio
-     */
     public function destroy(Portfolio $portfolio): RedirectResponse
     {
-        // Delete image if exists
-        if ($portfolio->image && !filter_var($portfolio->image, FILTER_VALIDATE_URL)) {
-            Storage::disk('public')->delete($portfolio->image);
+        $portfolio->load('photos');
+        $paths = $portfolio->photos->pluck('path')->all();
+
+        try {
+            DB::transaction(fn () => $portfolio->delete());
+        } catch (Throwable $exception) {
+            Log::error('Portfolio delete failed.', [
+                'portfolio_id' => $portfolio->id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return back()->with('error', 'Portfolio gagal dihapus, silakan coba lagi.');
         }
 
-        $portfolio->delete();
+        $this->deleteFiles($paths);
 
         return redirect()
             ->route('admin.portfolio.index')
             ->with('success', 'Portfolio berhasil dihapus!');
+    }
+
+    private function portfolioPayload(array $validated, PortfolioRequest $request, array $paths): array
+    {
+        $paths = collect($paths)->filter()->unique()->values()->all();
+
+        return [
+            'title' => $validated['title'],
+            'category' => $validated['category'] ?? null,
+            'description' => $validated['description'] ?? null,
+            'image' => $paths[0] ?? null,
+            'slider_images' => $paths,
+            'display_order' => $validated['display_order'] ?? 0,
+            'is_featured' => $request->boolean('is_featured'),
+            'is_active' => $request->boolean('is_active', true),
+        ];
+    }
+
+    private function storeUploadedPhotos(array $files): array
+    {
+        $paths = [];
+
+        foreach ($files as $file) {
+            $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension());
+            $filename = Str::uuid()->toString() . '.' . $extension;
+            $path = $file->storeAs(self::PHOTO_DIRECTORY, $filename, self::PHOTO_DISK);
+
+            if (!$path) {
+                throw new \RuntimeException('Failed to store uploaded portfolio photo.');
+            }
+
+            $paths[] = $path;
+        }
+
+        return $paths;
+    }
+
+    private function createPhotoRows(Portfolio $portfolio, array $paths): void
+    {
+        foreach ($paths as $index => $path) {
+            $portfolio->photos()->create([
+                'path' => $path,
+                'sort_order' => $index + 1,
+            ]);
+        }
+    }
+
+    private function deleteFiles(array|Collection $paths): void
+    {
+        collect($paths)
+            ->filter(fn ($path) => is_string($path) && $path !== '')
+            ->reject(fn ($path) => filter_var($path, FILTER_VALIDATE_URL))
+            ->reject(fn ($path) => str_starts_with($path, 'assets/'))
+            ->unique()
+            ->each(function (string $path) {
+                try {
+                    Storage::disk(self::PHOTO_DISK)->delete($path);
+                } catch (Throwable $exception) {
+                    Log::warning('Unable to delete portfolio photo.', [
+                        'path' => $path,
+                        'message' => $exception->getMessage(),
+                    ]);
+                }
+            });
     }
 }

@@ -27,66 +27,53 @@
                     <span class="material-symbols-outlined group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
                 </button>
                 <button onclick="scrollTestimonials('right')" class="w-12 h-12 rounded-full border border-white/10 bg-primary/10 hover:bg-primary flex items-center justify-center text-primary hover:text-black transition-all hover:scale-110 active:scale-95 group" aria-label="Next">
-                    <span class="material-symbols-outlined group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                    <svg class="w-5 h-5 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                 </button>
             </div>
         </div>
 
+        @if(isset($testimonials) && $testimonials->count() > 0)
         {{-- Carousel Container --}}
         <div class="relative -mx-4 px-4 sm:mx-0 sm:px-0">
             <div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 pt-8 scrollbar-hide" id="testimonials-container" style="scroll-behavior: smooth;">
-
-                @php
-                // Demo testimonials data (fallback)
-                $demoTestimonials = collect([
-                (object)['testimonial_text' => "Home Putra mampu menerjemahkan visi abstrak saya menjadi realita yang menakjubkan. Apartemen studio saya kini terasa 2x lebih luas dan sangat mewah.", 'client_name' => "Clarissa S.", 'client_location' => "Jakarta Selatan"],
-                (object)['testimonial_text' => "Saya ragu memesan kitchen set custom online, tapi hasilnya di luar dugaan. Finishing aluminiumnya sangat halus, presisi, dan kokoh. Pelayanan bintang 5.", 'client_name' => "Hendra Gunawan", 'client_location' => "Surabaya"],
-                (object)['testimonial_text' => "Tim desain sangat komunikatif dan sabar merevisi detail. Ruang kerja kantor kami sekarang jadi spot favorit karyawan. Produktivitas meningkat!", 'client_name' => "Robert Tan", 'client_location' => "Tangerang"],
-                (object)['testimonial_text' => "Sangat puas dengan renovasi kamar tidur utama. Nuansanya tenang, pencahayaannya hangat, persis seperti hotel bintang lima.", 'client_name' => "Dr. Sarah Wijaya", 'client_location' => "Bandung"],
-                (object)['testimonial_text' => "Pengerjaan backdrop TV sangat cepat dan rapi. Tidak ada debu tersisa. Tim instalasi sangat profesional dan sopan.", 'client_name' => "Budi Santoso", 'client_location' => "Bekasi"],
-                (object)['testimonial_text' => "Investasi terbaik untuk rumah pertama kami. Interior yang timeless membuat kami betah di rumah. Terima kasih Home Putra!", 'client_name' => "Putri & Dimas", 'client_location' => "Jakarta Barat"]
-                ]);
-
-                // Use database testimonials if available, otherwise use demo data
-                $displayTestimonials = (isset($testimonials) && $testimonials instanceof \Illuminate\Support\Collection && $testimonials->count() > 0)
-                ? $testimonials
-                : $demoTestimonials;
-                @endphp
-
-                @foreach($displayTestimonials as $key => $t)
+                @foreach($testimonials as $key => $t)
                 <div class="snap-center shrink-0 w-[280px] sm:w-[350px] md:w-[400px] h-full group" data-aos="fade-up" data-aos-delay="{{ $key * 50 }}">
-                    <div class="h-full bg-linear-to-br from-white/8 via-white/2 to-transparent backdrop-blur-md border border-gray-700/50 p-6 sm:p-8 rounded-2xl relative transition-all duration-500 hover:-translate-y-2 hover:border-primary/50 flex flex-col min-h-[280px] sm:min-h-[320px] shadow-2xl shadow-black/20">
+                    <div class="h-full bg-white/[0.02] backdrop-blur-xl border border-white/10 p-7 sm:p-10 rounded-3xl relative transition-all duration-500 hover:-translate-y-2 hover:bg-white/[0.04] flex flex-col min-h-[280px] sm:min-h-[320px] shadow-2xl shadow-black/40 overflow-hidden">
 
-                        {{-- Floating Decoration --}}
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-linear-to-bl from-primary/10 to-transparent rounded-tr-2xl pointer-events-none group-hover:from-primary/20 transition-all duration-500"></div>
+                        {{-- Large watermark quote --}}
+                        <span class="material-symbols-outlined absolute -top-4 -right-2 text-[120px] text-white/5 pointer-events-none group-hover:text-primary/10 transition-colors duration-500">format_quote</span>
 
-                        {{-- Quote Icon --}}
-                        <div class="absolute -top-3 -right-3 w-10 h-10 bg-background-dark border border-gray-700 rounded-full flex items-center justify-center group-hover:border-primary group-hover:text-primary transition-all duration-300 z-10 shadow-lg">
-                            <span class="material-symbols-outlined text-lg">format_quote</span>
-                        </div>
+                        {{-- Glowing subtle orb in bg --}}
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-[60px] rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                        {{-- Stars with Glow --}}
-                        <div class="flex gap-1 mb-6">
+                        {{-- Stars --}}
+                        <div class="flex gap-1 mb-6 relative z-10">
                             @for($i = 0; $i < 5; $i++)
-                                <span class="material-symbols-outlined text-sm text-primary fill-current drop-shadow-[0_0_10px_rgba(255,178,4,0.5)]">star</span>
-                                @endfor
+                                <span class="material-symbols-outlined text-base text-primary fill-current drop-shadow-[0_0_8px_rgba(255,178,4,0.3)]">star</span>
+                            @endfor
                         </div>
 
                         {{-- Testimonial Text --}}
-                        <p class="text-gray-300 font-light leading-relaxed mb-8 grow italic relative z-10">
+                        <p class="text-gray-300 font-light leading-relaxed mb-8 grow text-sm sm:text-base relative z-10">
                             "{{ $t->testimonial_text ?? '' }}"
                         </p>
 
                         {{-- Client Info --}}
-                        <div class="flex items-center gap-4 pt-6 border-t border-gray-700/50 mt-auto relative z-10">
-                            <div class="w-12 h-12 rounded-xl bg-linear-to-br from-primary/20 to-transparent border border-gray-700 group-hover:border-primary/50 flex items-center justify-center text-primary font-bold font-serif shrink-0 transition-all duration-300 group-hover:scale-110">
-                                {{ substr($t->client_name ?? 'A', 0, 1) }}
+                        <div class="flex items-center gap-4 pt-4 mt-auto relative z-10">
+                            {{-- Avatar --}}
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-primary/30 blur-md rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                <div class="relative w-12 h-12 rounded-full bg-[#1A1D24] border border-white/10 flex items-center justify-center text-white font-bold font-serif text-lg shrink-0">
+                                    {{ substr($t->client_name ?? 'A', 0, 1) }}
+                                </div>
                             </div>
                             <div class="min-w-0">
                                 <h3 class="text-white font-bold text-sm sm:text-base group-hover:text-primary transition-colors truncate">{{ $t->client_name ?? 'Anonim' }}</h3>
-                                <div class="flex items-center gap-1.5">
-                                    <span class="material-symbols-outlined text-[12px] text-primary">verified</span>
-                                    <p class="text-[10px] uppercase tracking-wider text-gray-400 truncate">{{ $t->client_location ?? 'Indonesia' }}</p>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <span class="material-symbols-outlined text-[13px] text-primary">verified</span>
+                                    <p class="text-[10px] uppercase tracking-widest text-gray-400 truncate">{{ $t->client_location ?? 'Indonesia' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -95,13 +82,14 @@
                 @endforeach
             </div>
         </div>
+        @endif
 
         {{-- Metrics --}}
         <div class="mt-12 md:mt-24 border-t border-white/5 pt-10 md:pt-16">
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-4 text-center">
                 <div class="flex flex-col items-center gap-2 group cursor-default" data-aos="fade-up">
                     <span class="text-2xl md:text-4xl text-white font-bold">4.9/5</span>
-                    <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Google Reviews</span>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ulasan Google</span>
                 </div>
                 <div class="flex flex-col items-center gap-2 group cursor-default" data-aos="fade-up" data-aos-delay="50">
                     <span class="text-2xl md:text-4xl text-white font-bold">100%</span>
@@ -113,7 +101,7 @@
                 </div>
                 <div class="flex flex-col items-center gap-2 group cursor-default" data-aos="fade-up" data-aos-delay="150">
                     <span class="text-2xl md:text-4xl text-white font-bold">Top 10</span>
-                    <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Interior Firm</span>
+                    <span class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Biro Interior</span>
                 </div>
             </div>
         </div>

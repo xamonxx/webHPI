@@ -21,7 +21,6 @@ Route::get('/sitemap.xml', function () {
         '/' => ['priority' => '1.0', 'freq' => 'weekly'],
         '/services' => ['priority' => '0.8', 'freq' => 'monthly'],
         '/portfolio' => ['priority' => '0.8', 'freq' => 'weekly'],
-        '/calculator' => ['priority' => '0.9', 'freq' => 'monthly'],
     ];
 
     foreach ($routes as $uri => $meta) {

@@ -1,10 +1,10 @@
-﻿{{-- Contact Section - EXACT COPY dari PHP Native --}}
+{{-- Contact Section - EXACT COPY dari PHP Native --}}
 
 @php
-$whatsappNumber = $settings['whatsapp_number'] ?? '6281809939681';
-$contactAddress = $settings['contact_address'] ?? 'Jl. Desain No. 123, Jakarta';
-$contactEmail = $settings['contact_email'] ?? 'hello@homeputra.com';
-$contactPhone = $settings['contact_phone'] ?? '+62 812 3456 7890';
+$whatsappNumber = $settings['whatsapp_number'] ?? '';
+$contactAddress = $settings['contact_address'] ?? '';
+$contactEmail = $settings['contact_email'] ?? '';
+$contactPhone = $settings['contact_phone'] ?? '';
 @endphp
 
 <section class="py-16 sm:py-20 md:py-28 lg:py-36 bg-background-dark relative overflow-hidden" id="contact">
@@ -78,6 +78,7 @@ $contactPhone = $settings['contact_phone'] ?? '+62 812 3456 7890';
 
                             <!-- Contact Details -->
                             <div class="space-y-3 sm:space-y-4">
+                                @if(!empty($whatsappNumber))
                                 <a href="https://wa.me/{{ $whatsappNumber }}" class="group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 md:p-5 bg-linear-to-br from-white/6 to-transparent border border-gray-700/50 rounded-xl sm:rounded-2xl cursor-pointer hover:border-primary/50 transition-all duration-300">
                                     <div class="w-11 sm:w-12 md:w-14 h-11 sm:h-12 md:h-14 rounded-xl sm:rounded-2xl bg-linear-to-br from-green-500/30 to-green-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
                                         <span class="material-symbols-outlined text-green-400 text-xl sm:text-2xl">chat</span>
@@ -86,9 +87,13 @@ $contactPhone = $settings['contact_phone'] ?? '+62 812 3456 7890';
                                         <h4 class="text-white font-medium text-sm sm:text-base group-hover:text-primary transition-colors">WhatsApp</h4>
                                         <p class="text-gray-500 text-xs sm:text-sm truncate">+{{ $whatsappNumber }}</p>
                                     </div>
-                                    <span class="material-symbols-outlined text-gray-600 text-lg sm:text-xl group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0">arrow_forward</span>
+                                    <svg class="w-5 h-5 text-gray-600 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
                                 </a>
+                                @endif
 
+                                @if(!empty($contactEmail))
                                 <a href="mailto:{{ $contactEmail }}" class="group flex items-center gap-3 sm:gap-4 p-3 sm:p-4 md:p-5 bg-linear-to-br from-white/6 to-transparent border border-gray-700/50 rounded-xl sm:rounded-2xl cursor-pointer hover:border-primary/50 transition-all duration-300">
                                     <div class="w-11 sm:w-12 md:w-14 h-11 sm:h-12 md:h-14 rounded-xl sm:rounded-2xl bg-linear-to-br from-blue-500/30 to-blue-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
                                         <span class="material-symbols-outlined text-blue-400 text-xl sm:text-2xl">mail</span>
@@ -97,18 +102,23 @@ $contactPhone = $settings['contact_phone'] ?? '+62 812 3456 7890';
                                         <h4 class="text-white font-medium text-sm sm:text-base group-hover:text-primary transition-colors">Email</h4>
                                         <p class="text-gray-500 text-xs sm:text-sm truncate">{{ $contactEmail }}</p>
                                     </div>
-                                    <span class="material-symbols-outlined text-gray-600 text-lg sm:text-xl group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0">arrow_forward</span>
+                                    <svg class="w-5 h-5 text-gray-600 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
                                 </a>
+                                @endif
 
+                                @if(!empty($contactAddress))
                                 <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 md:p-5 bg-linear-to-br from-white/6 to-transparent border border-gray-700/50 rounded-xl sm:rounded-2xl">
                                     <div class="w-11 sm:w-12 md:w-14 h-11 sm:h-12 md:h-14 rounded-xl sm:rounded-2xl bg-linear-to-br from-primary/30 to-primary/10 flex items-center justify-center shrink-0">
                                         <span class="material-symbols-outlined text-primary text-xl sm:text-2xl">location_on</span>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h4 class="text-white font-medium text-sm sm:text-base">Studio Kami</h4>
+                                        <h4 class="text-white font-medium text-sm sm:text-base">Kantor Kami</h4>
                                         <p class="text-gray-500 text-xs sm:text-sm">{{ $contactAddress }}</p>
                                     </div>
                                 </div>
+                                @endif
                             </div>
 
                             <!-- Social Links -->
@@ -147,36 +157,28 @@ $contactPhone = $settings['contact_phone'] ?? '+62 812 3456 7890';
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     <div class="space-y-1.5 sm:space-y-2">
                                         <label for="first_name" class="text-gray-400 text-[11px] sm:text-xs font-medium">Nama Depan</label>
-                                        <input id="first_name" name="first_name" class="w-full bg-background-dark border border-gray-700/50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-3 sm:py-4 text-white focus:border-primary focus:ring-0 outline-none text-sm placeholder-gray-600 transition-all" placeholder="John" type="text" required />
+                                        <input id="first_name" name="first_name" class="w-full bg-background-dark border border-gray-700/50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-3 sm:py-4 text-white focus:border-primary focus:ring-0 outline-none text-sm placeholder-gray-600 transition-all" placeholder="Nama depan" type="text" required />
                                     </div>
                                     <div class="space-y-1.5 sm:space-y-2">
                                         <label for="last_name" class="text-gray-400 text-[11px] sm:text-xs font-medium">Nama Belakang</label>
-                                        <input id="last_name" name="last_name" class="w-full bg-background-dark border border-gray-700/50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-3 sm:py-4 text-white focus:border-primary focus:ring-0 outline-none text-sm placeholder-gray-600 transition-all" placeholder="Doe" type="text" />
+                                        <input id="last_name" name="last_name" class="w-full bg-background-dark border border-gray-700/50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-3 sm:py-4 text-white focus:border-primary focus:ring-0 outline-none text-sm placeholder-gray-600 transition-all" placeholder="Nama belakang" type="text" />
                                     </div>
                                 </div>
 
-                                <!-- Email & Phone - Stack on mobile -->
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                    <div class="space-y-1.5 sm:space-y-2">
-                                        <label for="email" class="text-gray-400 text-[11px] sm:text-xs font-medium">Email</label>
-                                        <input id="email" name="email" class="w-full bg-background-dark border border-gray-700/50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-3 sm:py-4 text-white focus:border-primary focus:ring-0 outline-none text-sm placeholder-gray-600 transition-all" placeholder="john@example.com" type="email" required />
-                                    </div>
-                                    <div class="space-y-1.5 sm:space-y-2">
-                                        <label for="phone" class="text-gray-400 text-[11px] sm:text-xs font-medium">Telepon</label>
-                                        <input id="phone" name="phone" class="w-full bg-background-dark border border-gray-700/50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-3 sm:py-4 text-white focus:border-primary focus:ring-0 outline-none text-sm placeholder-gray-600 transition-all" placeholder="+62 812 xxx xxxx" type="tel" />
-                                    </div>
+                                <!-- Phone -->
+                                <div class="space-y-1.5 sm:space-y-2">
+                                    <label for="phone" class="text-gray-400 text-[11px] sm:text-xs font-medium">Telepon</label>
+                                    <input id="phone" name="phone" class="w-full bg-background-dark border border-gray-700/50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-3 sm:py-4 text-white focus:border-primary focus:ring-0 outline-none text-sm placeholder-gray-600 transition-all" placeholder="+62 812 xxx xxxx" type="tel" required />
                                 </div>
 
                                 <!-- Service Select -->
                                 <div class="space-y-1.5 sm:space-y-2">
                                     <label for="service_type" class="text-gray-400 text-[11px] sm:text-xs font-medium">Layanan yang Diminati</label>
                                     <select id="service_type" name="service_type" class="w-full bg-background-dark border border-gray-700/50 rounded-lg sm:rounded-xl px-3 sm:px-4 py-3 sm:py-4 text-white focus:border-primary focus:ring-0 outline-none text-sm transition-all appearance-none cursor-pointer" style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%236b7280%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em;">
-                                        <option value="kitchen">Kitchen Set</option>
-                                        <option value="wardrobe">Lemari & Wardrobe</option>
-                                        <option value="backdrop">Backdrop TV</option>
-                                        <option value="wallpanel">Wallpanel</option>
-                                        <option value="furniture">Furniture Custom</option>
-                                        <option value="consultation">Konsultasi Saja</option>
+                                        <option class="bg-gray-900 text-white" value="">Pilih layanan</option>
+                                        @foreach(($services ?? collect()) as $service)
+                                        <option class="bg-gray-900 text-white" value="{{ $service->title }}">{{ $service->title }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
 
@@ -193,7 +195,9 @@ $contactPhone = $settings['contact_phone'] ?? '+62 812 3456 7890';
                                         <span class="material-symbols-outlined text-base sm:text-lg">send</span>
                                         <span class="hidden sm:inline">Kirim Permintaan</span>
                                         <span class="sm:hidden">Kirim</span>
-                                        <span class="material-symbols-outlined text-base sm:text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
                                     </span>
                                 </button>
 
@@ -223,15 +227,19 @@ $contactPhone = $settings['contact_phone'] ?? '+62 812 3456 7890';
         </div>
 
         <!-- WhatsApp CTA -->
+        @if(!empty($whatsappNumber))
         <div class="mt-8 sm:mt-10 md:mt-12 text-center" data-aos="fade-up" data-aos-delay="200">
             <p class="text-gray-500 text-xs sm:text-sm mb-4 sm:mb-6">Butuh respons cepat?</p>
-            <a href="https://wa.me/{{ $whatsappNumber }}" aria-label="Chat WhatsApp Sekarang" class="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-6 md:px-8 py-3 sm:py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider transition-all hover:shadow-xl hover:shadow-green-500/30 group">
+            <a href="https://wa.me/{{ $whatsappNumber }}" aria-label="Chat WhatsApp Sekarang" class="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-6 md:px-8 py-3 sm:py-4 bg-green-500 hover:bg-green-600 text-white rounded-lg sm:rounded-xl font-medium text-xs sm:text-sm uppercase tracking-wide transition-all hover:shadow-xl hover:shadow-green-500/30 group">
                 <span class="material-symbols-outlined text-base sm:text-lg">chat</span>
                 <span class="hidden sm:inline">Chat WhatsApp Sekarang</span>
                 <span class="sm:hidden">WhatsApp</span>
-                <span class="material-symbols-outlined text-base sm:text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
             </a>
         </div>
+        @endif
     </div>
 </section>
 

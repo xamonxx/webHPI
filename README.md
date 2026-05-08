@@ -127,7 +127,6 @@ Setelah seeding, gunakan kredensial:
 | GET | `/` | HomeController@index |
 | GET | `/portfolio` | PortfolioController@index |
 | GET | `/services` | ServiceController@index |
-| GET | `/calculator` | CalculatorController@index |
 
 ### Admin (Protected)
 | Method | URI | Controller |
@@ -141,7 +140,6 @@ Setelah seeding, gunakan kredensial:
 | Method | URI | Description |
 |--------|-----|-------------|
 | POST | `/api/contact` | Submit contact form |
-| POST | `/api/calculator/calculate` | Calculate price |
 
 ## 🔒 Security
 

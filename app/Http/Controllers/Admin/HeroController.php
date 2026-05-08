@@ -14,20 +14,7 @@ class HeroController extends Controller
      */
     public function index()
     {
-        // Get the first (and usually only) hero section, or create one
-        $hero = HeroSection::first();
-
-        if (!$hero) {
-            $hero = HeroSection::create([
-                'title' => 'Wujudkan Interior Impian Anda.',
-                'subtitle' => 'Kami mengubah ruangan biasa menjadi mahakarya visual yang mewah, nyaman, dan mencerminkan karakter sukses kamu.',
-                'button1_text' => 'Lihat Portfolio',
-                'button1_link' => '#portfolio',
-                'button2_text' => 'Konsultasi Gratis',
-                'button2_link' => '#contact',
-                'is_active' => true,
-            ]);
-        }
+        $hero = HeroSection::first() ?? new HeroSection(['is_active' => true]);
 
         return view('admin.hero.index', compact('hero'));
     }
@@ -46,7 +33,6 @@ class HeroController extends Controller
             'button2_text' => 'nullable|string|max:50',
             'button2_link' => 'nullable|string|max:255',
             'background_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'background_url' => 'nullable|url|max:500',
             'is_active' => 'boolean',
         ]);
 
@@ -67,18 +53,15 @@ class HeroController extends Controller
             $filename = 'hero_' . time() . '.' . $file->getClientOriginalExtension();
             $file->storeAs('uploads', $filename, 'public');
             $hero->background_image = $filename;
-        } elseif ($request->filled('background_url')) {
-            // Use URL instead of upload
-            $hero->background_image = $request->background_url;
         }
 
         $hero->title = $validated['title'];
         $hero->title_highlight = $validated['title_highlight'] ?? null;
         $hero->subtitle = $validated['subtitle'];
-        $hero->button1_text = $validated['button1_text'] ?? 'Lihat Portfolio';
-        $hero->button1_link = $validated['button1_link'] ?? '#portfolio';
-        $hero->button2_text = $validated['button2_text'] ?? 'Konsultasi Gratis';
-        $hero->button2_link = $validated['button2_link'] ?? '#contact';
+        $hero->button1_text = $validated['button1_text'] ?? null;
+        $hero->button1_link = $validated['button1_link'] ?? null;
+        $hero->button2_text = $validated['button2_text'] ?? null;
+        $hero->button2_link = $validated['button2_link'] ?? null;
         $hero->is_active = $request->boolean('is_active', true);
         $hero->save();
 

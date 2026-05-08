@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Portfolio extends Model
 {
@@ -12,6 +13,7 @@ class Portfolio extends Model
         'category',
         'description',
         'image',
+        'slider_images',
         'display_order',
         'is_featured',
         'is_active',
@@ -21,6 +23,7 @@ class Portfolio extends Model
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'display_order' => 'integer',
+        'slider_images' => 'array',
     ];
 
     /**
@@ -47,20 +50,91 @@ class Portfolio extends Model
         return $query->orderBy('display_order')->orderByDesc('created_at');
     }
 
-    /**
-     * Get image URL with fallback
-     */
-    public function getImageUrlAttribute(): string
+    public function photos(): HasMany
     {
-        if (!$this->image) {
-            return 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80';
+        return $this->hasMany(PortfolioPhoto::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    /**
+     * Resolve a stored image path into a public URL.
+     */
+    public function resolveImageUrl(?string $path): ?string
+    {
+        if (!$path) {
+            return null;
         }
 
-        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
-            return $this->image;
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
         }
 
-        return asset('storage/' . $this->image);
+        $normalized = ltrim(str_replace('\\', '/', $path), '/');
+
+        if (str_starts_with($normalized, 'assets/')) {
+            return asset($normalized);
+        }
+
+        if (str_starts_with($normalized, 'storage/')) {
+            return asset($normalized);
+        }
+
+        return asset('storage/' . $normalized);
+    }
+
+    protected function photoPaths(): array
+    {
+        if ($this->relationLoaded('photos') && $this->photos->isNotEmpty()) {
+            return $this->photos
+                ->pluck('path')
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray();
+        }
+
+        $relationPaths = $this->photos()
+            ->pluck('path')
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+
+        if (!empty($relationPaths)) {
+            return $relationPaths;
+        }
+
+        return collect(array_merge(
+            $this->image ? [$this->image] : [],
+            $this->slider_images ?: []
+        ))->filter()->unique()->values()->toArray();
+    }
+
+    /**
+     * Get local image URL.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->resolveImageUrl(collect($this->photoPaths())->first());
+    }
+
+    /**
+     * Get slider image URLs
+     */
+    public function getSliderUrlsAttribute(): array
+    {
+        return collect($this->photoPaths())
+            ->map(fn ($path) => $this->resolveImageUrl($path))
+            ->filter()
+            ->values()
+            ->toArray();
+    }
+
+    /**
+     * Get all gallery images (main + sliders) as URLs
+     */
+    public function getAllImagesAttribute(): array
+    {
+        return collect($this->slider_urls)->unique()->values()->toArray();
     }
 
     /**

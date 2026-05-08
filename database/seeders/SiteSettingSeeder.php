@@ -15,20 +15,20 @@ class SiteSettingSeeder extends Seeder
         $settings = [
             // General Settings
             ['key' => 'site_name', 'value' => 'Home Putra Interior', 'type' => 'text', 'group' => 'general'],
-            ['key' => 'site_tagline', 'value' => 'Solusi Interior & Furniture Premium', 'type' => 'text', 'group' => 'general'],
-            ['key' => 'site_description', 'value' => 'Home Putra Interior adalah perusahaan yang bergerak di bidang desain interior, furniture custom, dan renovasi untuk rumah, apartemen, kantor, dan komersial.', 'type' => 'textarea', 'group' => 'general'],
+            ['key' => 'site_tagline', 'value' => '#1 JASA INTERIOR DESIGN', 'type' => 'text', 'group' => 'general'],
+            ['key' => 'site_description', 'value' => '', 'type' => 'textarea', 'group' => 'general'],
             ['key' => 'site_logo', 'value' => null, 'type' => 'image', 'group' => 'general'],
             ['key' => 'site_favicon', 'value' => null, 'type' => 'image', 'group' => 'general'],
 
             // Contact Settings
-            ['key' => 'contact_email', 'value' => 'info@homeputra.com', 'type' => 'text', 'group' => 'contact'],
-            ['key' => 'contact_phone', 'value' => '+62 812 3456 7890', 'type' => 'text', 'group' => 'contact'],
-            ['key' => 'contact_whatsapp', 'value' => '6281234567890', 'type' => 'text', 'group' => 'contact'],
-            ['key' => 'contact_address', 'value' => 'Jakarta, Indonesia', 'type' => 'textarea', 'group' => 'contact'],
+            ['key' => 'contact_email', 'value' => '', 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'contact_phone', 'value' => '', 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'contact_whatsapp', 'value' => '', 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'contact_address', 'value' => '', 'type' => 'textarea', 'group' => 'contact'],
 
             // Social Media Settings
-            ['key' => 'social_instagram', 'value' => 'https://instagram.com/homeputra', 'type' => 'text', 'group' => 'social'],
-            ['key' => 'social_facebook', 'value' => 'https://facebook.com/homeputra', 'type' => 'text', 'group' => 'social'],
+            ['key' => 'social_instagram', 'value' => '', 'type' => 'text', 'group' => 'social'],
+            ['key' => 'social_facebook', 'value' => '', 'type' => 'text', 'group' => 'social'],
             ['key' => 'social_tiktok', 'value' => '', 'type' => 'text', 'group' => 'social'],
             ['key' => 'social_youtube', 'value' => '', 'type' => 'text', 'group' => 'social'],
 

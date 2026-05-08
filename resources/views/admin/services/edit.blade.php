@@ -28,7 +28,7 @@
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nama Layanan</label>
                         <input type="text" name="title" value="{{ old('title', $service->title) }}"
                             class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50 focus:bg-black/40 transition-all font-medium"
-                            placeholder="Contoh: Desain Interior Rumah" required>
+                            placeholder="Nama layanan" required>
                         @error('title') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
@@ -135,9 +135,7 @@
                         {{-- Hidden Input --}}
                         <input type="hidden" name="icon" id="icon-input" value="{{ old('icon', $service->icon) ?? 'home' }}">
 
-                        <p class="text-[10px] text-gray-500 mt-2">
-                            Atau lihat lebih banyak di <a href="https://fonts.google.com/icons" target="_blank" class="text-green-400 hover:underline">Google Fonts Icons</a>
-                        </p>
+                        <p class="text-[10px] text-gray-500 mt-2">Ikon diambil dari font Material Symbols lokal.</p>
                         @error('icon') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 

@@ -41,6 +41,14 @@ class AdminAuthenticate
                 ->with('error', 'Akun Anda telah dinonaktifkan.');
         }
 
+        if (Auth::user()->role !== 'admin') {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Akses admin ditolak.'], 403);
+            }
+
+            abort(403, 'Akses admin ditolak.');
+        }
+
         return $next($request);
     }
 }

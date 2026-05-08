@@ -6,10 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Access - Admin Panel | Home Putra Interior</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Local Fonts -->
+    <link href="{{ asset('assets/css/fonts.css') }}" rel="stylesheet">
 
     <!-- Icons -->
     <link href="{{ asset('assets/css/material-symbols.css') }}" rel="stylesheet">
@@ -19,7 +17,7 @@
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Montserrat', sans-serif;
         }
     </style>
 </head>
@@ -41,7 +39,7 @@
                 <span class="material-symbols-outlined text-4xl text-primary relative z-10">verified_user</span>
             </div>
             <h1 class="text-3xl font-extrabold text-white tracking-tight">Admin<span class="text-primary">Panel</span></h1>
-            <p class="text-gray-500 font-medium text-sm mt-2">Secure Access Gateway</p>
+            <p class="text-gray-500 font-medium text-sm mt-2">Akses Admin</p>
         </div>
 
         {{-- Login Card --}}
@@ -77,7 +75,7 @@
                                 name="username"
                                 value="{{ old('username') }}"
                                 class="w-full h-12 pl-12 pr-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:bg-[#0B0D11] focus:border-primary/50 focus:shadow-[0_0_15px_rgba(255,178,4,0.1)] transition-all font-medium"
-                                placeholder="Enter username"
+                                placeholder="Username"
                                 required
                                 autofocus>
                         </div>

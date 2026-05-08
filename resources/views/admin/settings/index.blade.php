@@ -159,7 +159,7 @@
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-500 text-lg">mail</span>
                             <input type="email" name="contact_email" value="{{ $settings['contact_email'] ?? '' }}"
                                 class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50 focus:bg-black/40 transition-all font-medium"
-                                placeholder="email@example.com">
+                                placeholder="Alamat email">
                         </div>
                     </div>
 
@@ -170,7 +170,7 @@
                             <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-gray-500 text-lg">call</span>
                             <input type="text" name="contact_phone" value="{{ $settings['contact_phone'] ?? '' }}"
                                 class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50 focus:bg-black/40 transition-all font-medium"
-                                placeholder="+62 812 3456 7890">
+                                placeholder="Nomor telepon">
                         </div>
                     </div>
 
@@ -188,10 +188,10 @@
                             </span>
                             <input type="text" name="whatsapp_number" value="{{ $settings['whatsapp_number'] ?? '' }}"
                                 class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50 focus:bg-black/40 transition-all font-medium"
-                                placeholder="628123456789">
+                                placeholder="Nomor WhatsApp">
                         </div>
                         <p class="text-[10px] text-gray-500 mt-2">
-                            <span class="text-yellow-500">⚠️</span> Format: Tanpa tanda + atau spasi. Contoh: 628123456789
+                            Format: tanpa tanda + atau spasi.
                         </p>
                     </div>
 
@@ -202,7 +202,7 @@
                             <span class="absolute left-4 top-4 material-symbols-outlined text-gray-500 text-lg">location_on</span>
                             <textarea name="contact_address" rows="3"
                                 class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-green-500/50 focus:bg-black/40 transition-all"
-                                placeholder="Jl. Contoh No. 123, Kota, Provinsi">{{ $settings['contact_address'] ?? '' }}</textarea>
+                                placeholder="Alamat lengkap">{{ $settings['contact_address'] ?? '' }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -234,7 +234,7 @@
                             </span>
                             <input type="url" name="instagram_url" value="{{ $settings['instagram_url'] ?? '' }}"
                                 class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-pink-500/50 focus:bg-black/40 transition-all font-medium"
-                                placeholder="https://instagram.com/username">
+                                placeholder="URL profil Instagram">
                         </div>
                     </div>
 
@@ -249,7 +249,7 @@
                             </span>
                             <input type="url" name="facebook_url" value="{{ $settings['facebook_url'] ?? '' }}"
                                 class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:bg-black/40 transition-all font-medium"
-                                placeholder="https://facebook.com/pagename">
+                                placeholder="URL halaman Facebook">
                         </div>
                     </div>
 
@@ -264,7 +264,7 @@
                             </span>
                             <input type="url" name="tiktok_url" value="{{ $settings['tiktok_url'] ?? '' }}"
                                 class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-white/50 focus:bg-black/40 transition-all font-medium"
-                                placeholder="https://tiktok.com/@username">
+                                placeholder="URL profil TikTok">
                         </div>
                     </div>
 
@@ -279,7 +279,7 @@
                             </span>
                             <input type="url" name="youtube_url" value="{{ $settings['youtube_url'] ?? '' }}"
                                 class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-red-500/50 focus:bg-black/40 transition-all font-medium"
-                                placeholder="https://youtube.com/@channel">
+                                placeholder="URL kanal YouTube">
                         </div>
                     </div>
                 </div>
@@ -335,7 +335,7 @@
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Keywords</label>
                         <input type="text" name="seo_keywords" value="{{ $settings['seo_keywords'] ?? '' }}"
                             class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500/50 focus:bg-black/40 transition-all font-medium"
-                            placeholder="interior, furniture, desain, renovation">
+                            placeholder="Kata kunci SEO">
                         <p class="text-[10px] text-gray-500 mt-1">Pisahkan dengan koma</p>
                     </div>
 
@@ -358,11 +358,11 @@
                 </div>
                 <div class="bg-white rounded-xl p-4">
                     <p class="text-blue-800 text-lg font-medium hover:underline cursor-pointer" id="preview-title">
-                        {{ $settings['seo_meta_title'] ?? 'Judul Website Anda' }}
+                        {{ $settings['seo_meta_title'] ?? 'Judul website' }}
                     </p>
-                    <p class="text-green-700 text-sm">https://homeputra.com</p>
+                    <p class="text-green-700 text-sm">{{ url('/') }}</p>
                     <p class="text-gray-600 text-sm mt-1" id="preview-desc">
-                        {{ $settings['seo_meta_description'] ?? 'Deskripsi website Anda akan muncul di sini...' }}
+                        {{ $settings['seo_meta_description'] ?? 'Deskripsi website' }}
                     </p>
                 </div>
             </div>
@@ -415,7 +415,7 @@
             titleCount.textContent = titleInput.value.length + '/70';
             titleInput.addEventListener('input', function() {
                 titleCount.textContent = this.value.length + '/70';
-                previewTitle.textContent = this.value || 'Judul Website Anda';
+                previewTitle.textContent = this.value || 'Judul website';
             });
         }
 
@@ -423,7 +423,7 @@
             descCount.textContent = descInput.value.length + '/160';
             descInput.addEventListener('input', function() {
                 descCount.textContent = this.value.length + '/160';
-                previewDesc.textContent = this.value || 'Deskripsi website Anda akan muncul di sini...';
+                previewDesc.textContent = this.value || 'Deskripsi website';
             });
         }
     });
