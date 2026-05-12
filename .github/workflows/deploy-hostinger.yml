@@ -1,0 +1,175 @@
+name: Deploy to Hostinger Shared Hosting
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      skip_migration:
+        description: 'Skip database migration'
+        required: false
+        default: 'false'
+
+env:
+  DOMAIN: homeputrainterior.com
+
+jobs:
+  deploy:
+    name: Deploy to Hostinger
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: php-actions/setup-php@v3
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, mbstring, xml, curl, zip, fileinfo
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install PHP dependencies
+        run: composer install --no-dev --optimize-autoloader --prefer-dist
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Create .env file
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+        env:
+          APP_ENV: production
+          APP_DEBUG: false
+          APP_URL: https://${{ secrets.HOSTINGER_DOMAIN }}
+          DB_CONNECTION: mysql
+          DB_HOST: ${{ secrets.PRODUCTION_DB_HOST }}
+          DB_PORT: ${{ secrets.PRODUCTION_DB_PORT }}
+          DB_DATABASE: ${{ secrets.PRODUCTION_DB_DATABASE }}
+          DB_USERNAME: ${{ secrets.PRODUCTION_DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
+          SESSION_DRIVER: file
+          CACHE_STORE: file
+          QUEUE_CONNECTION: sync
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_SSH_HOST }}
+          port: ${{ secrets.HOSTINGER_SSH_PORT }}
+          username: ${{ secrets.HOSTINGER_SSH_USER }}
+          password: ${{ secrets.HOSTINGER_SSH_PASSWORD }}
+          script: |
+            set -e
+
+            echo "=== Starting deployment ==="
+
+            DOMAIN="${{ secrets.HOSTINGER_DOMAIN }}"
+            PROJECT_DIR="${{ secrets.HOSTINGER_HOME }}/domains/$DOMAIN/webHPI"
+            PUBLIC_DIR="${{ secrets.HOSTINGER_HOME }}/domains/$DOMAIN/public_html"
+
+            echo "Project directory: $PROJECT_DIR"
+            echo "Public directory: $PUBLIC_DIR"
+
+            # Create directories
+            mkdir -p "$PROJECT_DIR"
+            mkdir -p "$PUBLIC_DIR"
+
+            # Check if git repo exists
+            if [ -d "$PROJECT_DIR/.git" ]; then
+              echo "Git repo exists, pulling latest..."
+              cd "$PROJECT_DIR"
+              git fetch origin master
+              git reset --hard "origin/master"
+            else
+              echo "Cloning fresh repository..."
+              rm -rf "$PROJECT_DIR"
+              git clone -b master https://github.com/xamonxx/webHPI.git "$PROJECT_DIR"
+              cd "$PROJECT_DIR"
+            fi
+
+            echo "=== Install dependencies ==="
+
+            cd "$PROJECT_DIR"
+
+            # Install composer if available
+            if command -v composer >/dev/null 2>&1; then
+              composer install --no-dev --optimize-autoloader --prefer-dist
+            elif [ -f composer.phar ]; then
+              php composer.phar install --no-dev --optimize-autoloader --prefer-dist
+            else
+              echo "WARNING: Composer not available on server"
+            fi
+
+            echo "=== Create .env if not exists ==="
+
+            if [ ! -f "$PROJECT_DIR/.env" ]; then
+              cp "$PROJECT_DIR/.env.example" "$PROJECT_DIR/.env"
+            fi
+
+            # Update .env with production values
+            sed -i "s|APP_ENV=.*|APP_ENV=production|" "$PROJECT_DIR/.env"
+            sed -i "s|APP_DEBUG=.*|APP_DEBUG=false|" "$PROJECT_DIR/.env"
+            sed -i "s|APP_URL=.*|APP_URL=https://$DOMAIN|" "$PROJECT_DIR/.env"
+            sed -i "s|DB_HOST=.*|DB_HOST=${{ secrets.PRODUCTION_DB_HOST }}|" "$PROJECT_DIR/.env"
+            sed -i "s|DB_DATABASE=.*|DB_DATABASE=${{ secrets.PRODUCTION_DB_DATABASE }}|" "$PROJECT_DIR/.env"
+            sed -i "s|DB_USERNAME=.*|DB_USERNAME=${{ secrets.PRODUCTION_DB_USERNAME }}|" "$PROJECT_DIR/.env"
+            sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=${{ secrets.PRODUCTION_DB_PASSWORD }}|" "$PROJECT_DIR/.env"
+
+            # Generate app key
+            php artisan key:generate --force --no-interaction
+
+            echo "=== Laravel commands ==="
+
+            # Run migrations (unless skipped)
+            if [ "${{ inputs.skip_migration }}" != "true" ]; then
+              php artisan migrate --force --no-interaction || echo "Migration completed"
+            fi
+
+            # Storage link
+            php artisan storage:link || true
+
+            # Clear and optimize caches
+            php artisan config:clear
+            php artisan cache:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan optimize
+
+            echo "=== Sync public folder to public_html ==="
+
+            # Sync public folder to public_html
+            rsync -av --delete \
+                   --exclude='.env' \
+                   "$PROJECT_DIR/public/" "$PUBLIC_DIR/"
+
+            # Update index.php paths
+            if [ -f "$PUBLIC_DIR/index.php" ]; then
+              sed -i "s|__DIR__.'/../vendor/|__DIR__.'/../webHPI/vendor/|g" "$PUBLIC_DIR/index.php"
+              sed -i "s|__DIR__.'/../bootstrap/|__DIR__.'/../webHPI/bootstrap/|g" "$PUBLIC_DIR/index.php"
+            fi
+
+            # Copy .htaccess
+            if [ -f "$PROJECT_DIR/public/.htaccess" ] && [ ! -f "$PUBLIC_DIR/.htaccess" ]; then
+              cp "$PROJECT_DIR/public/.htaccess" "$PUBLIC_DIR/.htaccess"
+            fi
+
+            echo "=== Set permissions ==="
+
+            chmod -R 775 "$PROJECT_DIR/storage" 2>/dev/null || true
+            chmod -R 775 "$PROJECT_DIR/bootstrap/cache" 2>/dev/null || true
+            chmod 644 "$PROJECT_DIR/.env" 2>/dev/null || true
+
+            echo "=== Deployment completed! ==="
