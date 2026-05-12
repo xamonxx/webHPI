@@ -1,10 +1,11 @@
 *.log
+/storage/logs/*.log
 *.rar
 *.zip
 .DS_Store
 .env
-.env.backup
-.env.local
+.env.*
+!.env.example
 .phpactor.json
 .phpunit.result.cache
 /.fleet
@@ -17,7 +18,6 @@
 /assets
 /build
 /node_modules
-/public/build
 /public/build.zip
 /public/hot
 /public/storage
@@ -33,6 +33,7 @@
 /storage/pail
 /tmp_build
 /vendor
+/bootstrap/cache/*.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
