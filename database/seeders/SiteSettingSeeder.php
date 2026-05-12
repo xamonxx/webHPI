@@ -21,9 +21,10 @@ class SiteSettingSeeder extends Seeder
             ['key' => 'site_favicon', 'value' => null, 'type' => 'image', 'group' => 'general'],
 
             // Contact Settings
-            ['key' => 'contact_email', 'value' => '', 'type' => 'text', 'group' => 'contact'],
-            ['key' => 'contact_phone', 'value' => '', 'type' => 'text', 'group' => 'contact'],
-            ['key' => 'contact_whatsapp', 'value' => '', 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'contact_email', 'value' => 'cs@homeputrainterior.com', 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'contact_phone', 'value' => '+62 818-0993-9681', 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'contact_whatsapp', 'value' => '6281809939681', 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'whatsapp_number', 'value' => '6281809939681', 'type' => 'text', 'group' => 'contact'],
             ['key' => 'contact_address', 'value' => '', 'type' => 'textarea', 'group' => 'contact'],
 
             // Social Media Settings
