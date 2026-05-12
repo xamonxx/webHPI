@@ -25,6 +25,11 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
+<IfModule LiteSpeed>
+    CacheDisable public /
+    RewriteRule .* - [E=Cache-Control:no-cache]
+</IfModule>
+
 # Security Headers (Best Practices)
 <IfModule mod_headers.c>
     # Gunakan 'set' bukan 'always set' untuk menghindari duplikasi header dengan root .htaccess
