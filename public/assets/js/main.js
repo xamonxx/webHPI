@@ -1,214 +1,102 @@
-/**
- * Home Putra Interior - Main JS Logic
- * Menangani interaksi umum website, navigasi, dan animasi reveal.
- */
-
-// Custom Reveal Animation (Intersection Observer)
-const initReveal = () => {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('aos-animate');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    document.querySelectorAll('[data-aos]').forEach(el => observer.observe(el));
-};
-
-// FIXED: Initialize animations on ALL devices (not just desktop)
-// For mobile/tablet: immediately show elements to improve performance
-document.addEventListener('DOMContentLoaded', function () {
-    const isMobile = window.innerWidth < 768;
-    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
-
-    if (isMobile || isTablet) {
-        // On mobile/tablet: immediately make all AOS elements visible
-        // This prevents elements from being hidden due to AOS initialization issues
-        document.querySelectorAll('[data-aos]').forEach(el => {
-            el.classList.add('aos-animate');
-            // Remove AOS attributes to prevent conflicts
-            el.removeAttribute('data-aos');
-            el.removeAttribute('data-aos-delay');
-            el.removeAttribute('data-aos-duration');
-        });
-    } else {
-        // On desktop: use intersection observer for smooth reveal
-        initReveal();
-    }
-});
-
-// Preloader Handler
-window.addEventListener('load', function () {
-    const preloader = document.getElementById('preloader');
-    if (preloader) {
-        preloader.style.opacity = '0';
-        setTimeout(() => {
-            preloader.style.display = 'none';
-        }, 500);
-    }
-});
-
-/**
- * Navigation Scroll Effects
- */
-const nav = document.getElementById('main-nav');
-const backToTop = document.getElementById('back-to-top');
-
-window.addEventListener('scroll', () => {
-    if (nav) {
-        if (window.pageYOffset > 100) nav.classList.add('scrolled');
-        else nav.classList.remove('scrolled');
-    }
-
-    if (backToTop) {
-        if (window.pageYOffset > 500) {
-            backToTop.classList.remove('opacity-0', 'pointer-events-none');
+(() => {
+    const onReady = (callback) => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', callback, { once: true });
         } else {
-            backToTop.classList.add('opacity-0', 'pointer-events-none');
+            callback();
         }
-    }
-});
-
-if (backToTop) {
-    backToTop.addEventListener('click', () => window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    }));
-}
-
-/**
- * Mobile Menu Logic
- */
-const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-const mobileMenu = document.getElementById('mobile-menu');
-const mobileMenuClose = document.getElementById('mobile-menu-close');
-const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
-
-// Mobile Menu Logic is now handled within navbar.blade.php for the premium design
-/*
-if (mobileMenuBtn && mobileMenu && mobileMenuOverlay) {
-    mobileMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.add('active');
-        mobileMenuOverlay.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    });
-
-    const closeMenu = () => {
-        mobileMenu.classList.remove('active');
-        mobileMenuOverlay.classList.add('hidden');
-        document.body.style.overflow = '';
     };
 
-    if (mobileMenuClose) mobileMenuClose.addEventListener('click', closeMenu);
-    mobileMenuOverlay.addEventListener('click', closeMenu);
-}
-*/
+    onReady(() => {
+        const revealItems = document.querySelectorAll('[data-aos]');
+        if (revealItems.length > 0) {
+            if (!('IntersectionObserver' in window)) {
+                revealItems.forEach((item) => item.classList.add('aos-animate'));
+            } else {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (!entry.isIntersecting) return;
 
-/**
- * Smooth Scroll for Hash Links
- */
-document.querySelectorAll('a').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        if (!href || href === '#' || href.startsWith('javascript:')) return;
-
-        try {
-            const url = new URL(href, window.location.origin);
-            const currentPath = window.location.pathname.replace(/\/index\.php$/, '/');
-            const targetPath = url.pathname.replace(/\/index\.php$/, '/');
-
-            if (currentPath === targetPath && url.hash) {
-                const targetId = url.hash.slice(1);
-                const target = document.getElementById(targetId);
-
-                if (target) {
-                    e.preventDefault();
-                    window.scrollTo({
-                        top: target.offsetTop - 80,
-                        behavior: 'smooth'
+                        entry.target.classList.add('aos-animate');
+                        observer.unobserve(entry.target);
                     });
+                }, {
+                    rootMargin: '0px 0px -48px 0px',
+                    threshold: 0.08
+                });
 
-                    // Update URL without hash after scroll
-                    setTimeout(() => {
-                        history.replaceState(null, null, window.location.pathname + window.location.search);
-                    }, 1000);
+                revealItems.forEach((item) => observer.observe(item));
+            }
+        }
 
-                    // Close mobile menu if open
-                    if (mobileMenu && mobileMenu.classList.contains('active')) {
-                        mobileMenu.classList.remove('active');
-                        mobileMenuOverlay.classList.add('hidden');
-                        document.body.style.overflow = '';
+        document.querySelectorAll('a[href^="#"], a[href*="/#"]').forEach((anchor) => {
+            anchor.addEventListener('click', (event) => {
+                const href = anchor.getAttribute('href');
+                if (!href || href === '#') return;
+
+                const url = new URL(href, window.location.origin);
+                const samePath = url.pathname.replace(/\/index\.php$/, '/') === window.location.pathname.replace(/\/index\.php$/, '/');
+                if (!samePath || !url.hash) return;
+
+                const target = document.getElementById(url.hash.slice(1));
+                if (!target) return;
+
+                event.preventDefault();
+                window.scrollTo({
+                    top: target.getBoundingClientRect().top + window.scrollY - 80,
+                    behavior: 'smooth'
+                });
+            }, { passive: false });
+        });
+
+        const counters = document.querySelectorAll('.counter');
+        if (counters.length > 0 && 'IntersectionObserver' in window) {
+            const animateCounter = (counter) => {
+                const target = parseInt(counter.getAttribute('data-target'), 10) || 0;
+                const suffix = counter.getAttribute('data-suffix') || '';
+                const duration = 1200;
+                const start = performance.now();
+
+                const tick = (now) => {
+                    const progress = Math.min((now - start) / duration, 1);
+                    counter.textContent = Math.floor(target * progress) + suffix;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(tick);
                     }
-                }
-            }
-        } catch (err) {
-            if (href.startsWith('#')) {
-                const targetId = href.slice(1);
-                const target = document.getElementById(targetId);
-                if (target) {
-                    e.preventDefault();
-                    window.scrollTo({
-                        top: target.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            }
+                };
+
+                requestAnimationFrame(tick);
+            };
+
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+
+                    animateCounter(entry.target);
+                    counterObserver.unobserve(entry.target);
+                });
+            }, { threshold: 0.5 });
+
+            counters.forEach((counter) => counterObserver.observe(counter));
+        }
+
+        const backToTop = document.getElementById('back-to-top');
+        if (backToTop) {
+            let ticking = false;
+            const updateBackToTop = () => {
+                const visible = window.scrollY > 500;
+                backToTop.classList.toggle('opacity-0', !visible);
+                backToTop.classList.toggle('invisible', !visible);
+                ticking = false;
+            };
+
+            window.addEventListener('scroll', () => {
+                if (ticking) return;
+
+                ticking = true;
+                requestAnimationFrame(updateBackToTop);
+            }, { passive: true });
         }
     });
-});
-
-/**
- * Counter Animation
- */
-const counters = document.querySelectorAll('.counter');
-
-const animateCounter = (counter) => {
-    const target = parseInt(counter.getAttribute('data-target')) || 0;
-    const suffix = counter.getAttribute('data-suffix') || '';
-    const duration = 2000;
-    const step = target / (duration / 16);
-    let current = 0;
-
-    const updateCounter = () => {
-        current += step;
-        if (current < target) {
-            counter.textContent = Math.floor(current) + suffix;
-            requestAnimationFrame(updateCounter);
-        } else {
-            counter.textContent = target + suffix;
-        }
-    };
-
-    updateCounter();
-};
-
-if (counters.length > 0) {
-    const counterObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateCounter(entry.target);
-                counterObserver.unobserve(entry.target);
-            }
-        });
-    }, {
-        threshold: 0.5
-    });
-
-    counters.forEach(counter => counterObserver.observe(counter));
-}
-
-// Clean URL on page load if hash exists
-window.addEventListener('load', () => {
-    if (window.location.hash) {
-        setTimeout(() => {
-            history.replaceState(null, null, window.location.pathname + window.location.search);
-        }, 1000);
-    }
-});
+})();

@@ -110,19 +110,3 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
     </svg>
 </button>
-
-<script>
-    // Back to top visibility
-    document.addEventListener('scroll', function() {
-        const backToTop = document.getElementById('back-to-top');
-        if (window.scrollY > 500) {
-            backToTop.classList.remove('opacity-0', 'invisible');
-            backToTop.classList.add('opacity-100', 'visible');
-        } else {
-            backToTop.classList.add('opacity-0', 'invisible');
-            backToTop.classList.remove('opacity-100', 'visible');
-        }
-    }, {
-        passive: true
-    });
-</script>

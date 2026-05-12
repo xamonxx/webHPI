@@ -360,7 +360,7 @@
                             </a>
                         </div>
                         <div class="theme-keep-dark relative overflow-hidden rounded-xl border border-white/5 group/card">
-                            <img src="{{ asset('assets/images/materials/multipleks-hpl.png') }}" class="absolute inset-0 w-full h-full object-cover opacity-30 transition-transform duration-700 group-hover/card:scale-110" onerror="this.style.display='none'">
+                            <img src="{{ asset('assets/images/materials/multipleks-hpl.png') }}" class="absolute inset-0 w-full h-full object-cover opacity-30 transition-transform duration-700 group-hover/card:scale-110" loading="lazy" decoding="async" onerror="this.style.display='none'">
                             <div class="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent"></div>
                             <div class="relative p-5 h-full flex flex-col justify-end">
                                 <span class="bg-primary text-black text-[9px] font-bold px-2 py-1 rounded w-fit uppercase mb-2">Unggulan</span>
@@ -391,7 +391,6 @@
         {{-- CTA & Toggle --}}
         <div class="flex items-center gap-4 relative z-[91]">
             <button type="button" data-theme-toggle class="theme-toggle hidden lg:inline-flex h-10 items-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition-all duration-300" aria-label="Ganti tema" aria-pressed="false">
-                <span data-theme-icon class="material-symbols-outlined text-lg">dark_mode</span>
                 <span data-theme-label>Dark</span>
             </button>
 
@@ -450,7 +449,6 @@
     {{-- Footer --}}
     <div class="mt-8 mb-12">
         <button type="button" data-theme-toggle class="theme-toggle mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 text-white px-5 py-3 font-bold transition-all" aria-label="Ganti tema" aria-pressed="false">
-            <span data-theme-icon class="material-symbols-outlined text-xl">dark_mode</span>
             <span data-theme-label>Dark</span>
         </button>
 

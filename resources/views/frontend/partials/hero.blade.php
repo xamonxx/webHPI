@@ -14,9 +14,9 @@
         {{-- Optimized Hero Image (LCP) --}}
         <img src="{{ $heroBg }}"
              alt="{{ $hero->title ?? 'Home Putra Interior' }}"
-             class="absolute inset-0 w-full h-full object-cover md:animate-ken-burns"
-             style="will-change: transform;"
+             class="absolute inset-0 w-full h-full object-cover"
              fetchpriority="high"
+             loading="eager"
              decoding="async"
              width="1920"
              height="1080">
@@ -35,14 +35,14 @@
 
             {{-- Top Tagline --}}
             @if(!empty($settings['site_tagline']))
-            <div data-aos="fade-down" class="flex items-center gap-3">
+            <div class="flex items-center gap-3">
                 <div class="h-px w-12 bg-primary/50 hidden md:block"></div>
                 <span class="text-primary text-xs md:text-sm font-bold uppercase tracking-[0.3em] drop-shadow-lg">{{ $settings['site_tagline'] }}</span>
             </div>
             @endif
 
             {{-- Main Title (Customer-Centric Copy) --}}
-            <h1 class="hero-title font-bold text-white drop-shadow-xl" data-aos="fade-up" data-aos-delay="100">
+            <h1 class="hero-title font-bold text-white drop-shadow-xl">
                 {{ $hero?->title ?? $settings['site_name'] ?? 'Home Putra Interior' }}
                 @if($hero?->title_highlight)
                 <span class="hero-highlight">{{ $hero->title_highlight }}</span>
@@ -51,7 +51,7 @@
 
             {{-- Description --}}
             @if(!empty($hero?->subtitle) || !empty($settings['site_description']))
-            <p class="hero-subtitle text-gray-200 font-light leading-relaxed max-w-[760px] drop-shadow-md" data-aos="fade-up" data-aos-delay="200">
+            <p class="hero-subtitle text-gray-200 font-light leading-relaxed max-w-[760px] drop-shadow-md">
                 {{ $hero?->subtitle ?? $settings['site_description'] }}
             </p>
             @endif
@@ -166,17 +166,4 @@
         }
     }
 
-    @keyframes ken-burns {
-        0% {
-            transform: scale(1);
-        }
-
-        100% {
-            transform: scale(1.15);
-        }
-    }
-
-    .animate-ken-burns {
-        animation: ken-burns 25s ease-out infinite alternate;
-    }
 </style>
