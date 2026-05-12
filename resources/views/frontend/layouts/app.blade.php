@@ -166,7 +166,7 @@
     @endif
 
     {{-- Tailwind CSS --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css'])
 
     @if($heroPreloadImage)
     <link rel="preload" as="image" href="{{ $heroPreloadImage }}" fetchpriority="high">
