@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\TestimonialRequest;
 use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -32,29 +33,34 @@ class TestimonialController extends Controller
     /**
      * Store a newly created testimonial
      */
-    public function store(Request $request): RedirectResponse
+    public function store(TestimonialRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'client_name' => 'required|string|max:255',
-            'client_location' => 'nullable|string|max:255',
-            'testimonial_text' => 'required|string',
-            'rating' => 'required|integer|min:1|max:5',
-            'client_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'display_order' => 'nullable|integer',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
-        // Handle defaults
         $validated['is_active'] = $request->boolean('is_active', true);
         $validated['display_order'] = $validated['display_order'] ?? 0;
+        $uploadedPath = null;
 
-        // Handle image upload
         if ($request->hasFile('client_image')) {
-            $validated['client_image'] = $request->file('client_image')
-                ->store('testimonials', 'public');
+            $uploadedPath = $request->file('client_image')->store('testimonials', 'public');
+            $validated['client_image'] = $uploadedPath;
         }
 
-        Testimonial::create($validated);
+        try {
+            Testimonial::create($validated);
+        } catch (\Throwable $exception) {
+            if ($uploadedPath) {
+                Storage::disk('public')->delete($uploadedPath);
+            }
+
+            report($exception);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Testimoni gagal ditambahkan, silakan coba lagi.');
+        }
+
+        $this->clearFrontendCache();
 
         return redirect()
             ->route('admin.testimonials.index')
@@ -80,33 +86,43 @@ class TestimonialController extends Controller
     /**
      * Update the specified testimonial
      */
-    public function update(Request $request, Testimonial $testimonial): RedirectResponse
+    public function update(TestimonialRequest $request, Testimonial $testimonial): RedirectResponse
     {
-        $validated = $request->validate([
-            'client_name' => 'required|string|max:255',
-            'client_location' => 'nullable|string|max:255',
-            'testimonial_text' => 'required|string',
-            'rating' => 'required|integer|min:1|max:5',
-            'client_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'display_order' => 'nullable|integer',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $validated['is_active'] = $request->boolean('is_active');
         $validated['display_order'] = $validated['display_order'] ?? $testimonial->display_order;
+        $uploadedPath = null;
+        $oldImage = null;
 
-        // Handle image upload
         if ($request->hasFile('client_image')) {
-            // Delete old image
-            if ($testimonial->client_image && ! filter_var($testimonial->client_image, FILTER_VALIDATE_URL)) {
-                Storage::disk('public')->delete($testimonial->client_image);
-            }
+            $oldImage = $testimonial->client_image && ! filter_var($testimonial->client_image, FILTER_VALIDATE_URL)
+                ? $testimonial->client_image
+                : null;
 
-            $validated['client_image'] = $request->file('client_image')
-                ->store('testimonials', 'public');
+            $uploadedPath = $request->file('client_image')->store('testimonials', 'public');
+            $validated['client_image'] = $uploadedPath;
         }
 
-        $testimonial->update($validated);
+        try {
+            $testimonial->update($validated);
+        } catch (\Throwable $exception) {
+            if ($uploadedPath) {
+                Storage::disk('public')->delete($uploadedPath);
+            }
+
+            report($exception);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Testimoni gagal diperbarui, silakan coba lagi.');
+        }
+
+        if ($oldImage) {
+            Storage::disk('public')->delete($oldImage);
+        }
+
+        $this->clearFrontendCache();
 
         return redirect()
             ->route('admin.testimonials.index')
@@ -118,15 +134,27 @@ class TestimonialController extends Controller
      */
     public function destroy(Testimonial $testimonial): RedirectResponse
     {
-        // Delete image if exists
-        if ($testimonial->client_image && ! filter_var($testimonial->client_image, FILTER_VALIDATE_URL)) {
-            Storage::disk('public')->delete($testimonial->client_image);
+        try {
+            if ($testimonial->client_image && ! filter_var($testimonial->client_image, FILTER_VALIDATE_URL)) {
+                Storage::disk('public')->delete($testimonial->client_image);
+            }
+
+            $testimonial->delete();
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return back()->with('error', 'Testimoni gagal dihapus, silakan coba lagi.');
         }
 
-        $testimonial->delete();
+        $this->clearFrontendCache();
 
         return redirect()
             ->route('admin.testimonials.index')
             ->with('success', 'Testimoni berhasil dihapus!');
+    }
+
+    private function clearFrontendCache(): void
+    {
+        Cache::forget('frontend.home.data');
     }
 }

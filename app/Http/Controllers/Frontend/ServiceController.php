@@ -19,4 +19,22 @@ class ServiceController extends Controller
 
         return view('frontend.services-all', compact('services'));
     }
+
+    /**
+     * Display single service detail
+     */
+    public function show(Service $service): View
+    {
+        if (! $service->is_active) {
+            abort(404);
+        }
+
+        $relatedServices = Service::active()
+            ->where('id', '!=', $service->id)
+            ->ordered()
+            ->limit(3)
+            ->get();
+
+        return view('frontend.service-detail', compact('service', 'relatedServices'));
+    }
 }

@@ -269,14 +269,22 @@ $contactPhone = $settings['contact_phone'] ?? '';
             .then(data => {
                 formMessage.classList.remove('hidden', 'bg-red-500/20', 'text-red-400', 'bg-green-500/20', 'text-green-400');
 
-                if (data.success) {
-                    formMessage.classList.add('bg-green-500/20', 'text-green-400');
-                    formMessage.innerHTML = `<span class="flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">check_circle</span>${data.message}</span>`;
-                    this.reset();
-                } else {
-                    formMessage.classList.add('bg-red-500/20', 'text-red-400');
-                    formMessage.innerHTML = `<span class="flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">error</span>${data.message}</span>`;
-                }
+                const icon = data.success ? 'check_circle' : 'error';
+                const colorClass = data.success ? ['bg-green-500/20', 'text-green-400'] : ['bg-red-500/20', 'text-red-400'];
+                formMessage.classList.add(...colorClass);
+
+                // Build DOM safely to prevent XSS -- never use innerHTML with server data
+                formMessage.textContent = '';
+                const span = document.createElement('span');
+                span.className = 'flex items-center justify-center gap-2';
+                const iconEl = document.createElement('span');
+                iconEl.className = 'material-symbols-outlined text-sm';
+                iconEl.textContent = icon;
+                span.appendChild(iconEl);
+                span.appendChild(document.createTextNode(data.message || ''));
+                formMessage.appendChild(span);
+
+                if (data.success) this.reset();
 
                 submitBtn.innerHTML = originalHTML;
                 submitBtn.disabled = false;

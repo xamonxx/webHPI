@@ -9,7 +9,7 @@
 
     <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_420px] gap-6">
         <div class="space-y-6">
-            <section class="glass-card p-5 sm:p-6 rounded-2xl border border-white/5">
+            <section class="glass-card relative z-20 p-5 sm:p-6 rounded-2xl border border-white/5">
                 <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary">edit_document</span>
                     Informasi Project
@@ -37,16 +37,7 @@
                 </h3>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Kategori Utama</label>
-                        <select name="category" class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all">
-                            <option value="">Pilih Kategori</option>
-                            @foreach(['Kitchen Set', 'Lemari & Wardrobe', 'Backdrop TV', 'Wallpanel', 'Interior Design', 'Furniture Custom', 'Renovation', 'Komersial', 'Residensial'] as $cat)
-                            <option value="{{ $cat }}" @selected(old('category') === $cat)>{{ $cat }}</option>
-                            @endforeach
-                        </select>
-                        @error('category') <p class="text-red-400 text-xs mt-2">{{ $message }}</p> @enderror
-                    </div>
+                    @include('admin.portfolio.partials.category-combobox', ['selectedCategory' => null])
 
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Status Publikasi</label>
@@ -78,24 +69,25 @@
                         </h3>
                         <p class="mt-2 text-xs text-gray-500 leading-relaxed">Upload 1 sampai 5 foto. Setiap foto maksimal 10 MB.</p>
                     </div>
-                    <span id="photo-count" class="text-xs text-gray-500 font-mono shrink-0">0 / 5</span>
+                    <span id="photo-count" class="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs font-bold text-gray-300">0 / 5</span>
                 </div>
 
-                <label id="photo-upload-zone" class="group flex min-h-[150px] cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-white/15 bg-black/20 p-5 text-center transition hover:border-primary/50 hover:bg-primary/5">
-                    <input type="file" name="photos[]" id="photos-input" class="hidden" accept="image/jpeg,image/png,image/webp" multiple>
-                    <span class="material-symbols-outlined text-4xl text-gray-500 group-hover:text-primary">add_photo_alternate</span>
-                    <span class="text-sm font-bold text-gray-300">Pilih Foto Project</span>
-                    <span class="text-xs text-gray-500">JPG, JPEG, PNG, WEBP</span>
+                <label id="photo-upload-zone" for="photos-input" class="group flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-black/20 p-6 text-center transition hover:border-primary/60 hover:bg-primary/5">
+                    <span class="material-symbols-outlined mb-3 text-5xl text-primary transition group-hover:scale-105">add_photo_alternate</span>
+                    <span class="text-sm font-bold text-white">Pilih Foto Project</span>
+                    <span class="mt-1 text-xs text-gray-500">JPG, PNG, WEBP - maksimal 10 MB per foto</span>
+                    <input id="photos-input" name="photos[]" type="file" accept="image/jpeg,image/png,image/webp" multiple class="sr-only">
                 </label>
-
                 <p id="photo-upload-error" class="hidden mt-3 text-xs text-red-400"></p>
                 @error('photos') <p class="mt-3 text-xs text-red-400">{{ $message }}</p> @enderror
                 @error('photos.*') <p class="mt-3 text-xs text-red-400">{{ $message }}</p> @enderror
 
-                <div id="photo-preview-grid" class="mt-5 grid grid-cols-2 gap-3"></div>
+                <div id="photo-preview-grid" class="mt-4 grid grid-cols-2 gap-3"></div>
+                <div id="existing-photo-inputs"></div>
+                <div id="removed-photo-inputs"></div>
 
                 <div class="mt-5 rounded-xl border border-blue-500/20 bg-blue-500/10 p-3 text-xs leading-relaxed text-blue-300/80">
-                    Foto pertama otomatis menjadi cover portfolio. Urutan bisa diatur ulang nanti dari data yang tersimpan.
+                    Foto pertama otomatis menjadi cover portfolio. Urutan foto mengikuti urutan upload.
                 </div>
 
                 <div class="mt-6 border-t border-white/10 pt-5">
@@ -117,5 +109,6 @@
 <script>
     window.portfolioInitialPhotos = [];
 </script>
+<script src="{{ asset('assets/js/admin-portfolio-category.js') }}"></script>
 <script src="{{ asset('assets/js/admin-portfolio-upload.js') }}"></script>
 @endpush

@@ -97,8 +97,9 @@
                             </a>
 
                             <button type="button"
-                                onclick="openDeleteModal('{{ $item->id }}', '{{ $item->full_name }}')"
-                                class="p-2 rounded-lg text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors" title="Hapus">
+                                data-delete-id="{{ $item->id }}"
+                                data-delete-name="{{ $item->full_name }}"
+                                class="btn-delete p-2 rounded-lg text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors" title="Hapus">
                                 <span class="material-symbols-outlined text-lg">delete</span>
                             </button>
                         </div>
@@ -179,14 +180,16 @@
 
 @push('scripts')
 <script>
+    const deleteBaseUrl = @json(rtrim(route('admin.messages.destroy', ['message' => '__ID__']), '__ID__'));
+
     function openDeleteModal(id, name) {
         const modal = document.getElementById('deleteModal');
         const modalContent = document.getElementById('deleteModalContent');
         const deleteForm = document.getElementById('deleteForm');
         const deleteItemName = document.getElementById('deleteItemName');
 
-        // Set the form action and item name
-        deleteForm.action = `/admin/messages/${id}`;
+        // Use Laravel route with ID replacement instead of hardcoded path
+        deleteForm.action = deleteBaseUrl + id;
         deleteItemName.textContent = name;
 
         // Show modal
@@ -219,6 +222,14 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeDeleteModal();
+        }
+    });
+
+    // Event delegation for delete buttons -- safe from XSS (uses data attributes)
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-delete');
+        if (btn) {
+            openDeleteModal(btn.dataset.deleteId, btn.dataset.deleteName);
         }
     });
 </script>

@@ -14,6 +14,19 @@ class PortfolioRequest extends FormRequest
         return $this->user()?->is_active === true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $category = $this->input('category');
+
+        if (is_string($category)) {
+            $category = trim(preg_replace('/\s+/', ' ', $category));
+        }
+
+        $this->merge([
+            'category' => $category === '' ? null : $category,
+        ]);
+    }
+
     public function rules(): array
     {
         $photoRules = $this->isMethod('post')
@@ -39,10 +52,9 @@ class PortfolioRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'photos.array' => 'Maksimal upload 5 foto.',
-            'photos.required' => 'Foto wajib berupa gambar.',
-            'photos.min' => 'Foto wajib berupa gambar.',
-            'photos.max' => 'Maksimal upload 5 foto.',
+            'photos.required' => 'Minimal 1 foto portfolio wajib diupload.',
+            'photos.min' => 'Minimal 1 foto portfolio wajib diupload.',
+            'photos.max' => 'Maksimal upload '.self::MAX_PHOTOS.' foto portfolio.',
             'photos.*.image' => 'Foto wajib berupa gambar.',
             'photos.*.mimes' => 'Format gambar tidak didukung. Gunakan JPG, JPEG, PNG, atau WEBP.',
             'photos.*.max' => 'Maksimal ukuran setiap foto adalah 10 MB.',
@@ -53,19 +65,18 @@ class PortfolioRequest extends FormRequest
     {
         $validator->after(function (Validator $validator) {
             $photos = $this->file('photos', []);
-            $photoCount = is_array($photos) ? count($photos) : 0;
 
             if ($this->hasFile('photos') && ! is_array($photos)) {
-                $validator->errors()->add('photos', 'Maksimal upload 5 foto.');
+                $validator->errors()->add('photos', 'Format upload foto tidak valid.');
 
                 return;
             }
 
-            if ($photoCount > self::MAX_PHOTOS) {
-                $validator->errors()->add('photos', 'Maksimal upload 5 foto.');
+            if (is_array($photos) && count($photos) > self::MAX_PHOTOS) {
+                $validator->errors()->add('photos', 'Maksimal upload '.self::MAX_PHOTOS.' foto portfolio.');
             }
 
-            foreach ($photos as $photo) {
+            foreach ((array) $photos as $photo) {
                 if ($photo && $photo->getSize() > 10 * 1024 * 1024) {
                     $validator->errors()->add('photos', 'Ada foto yang melebihi batas 10 MB.');
                     break;

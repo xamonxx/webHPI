@@ -31,8 +31,8 @@
         {{-- Date Display (Desktop) --}}
         <div class="hidden lg:flex items-center gap-3 pl-4 border-l border-white/5">
             <div class="text-right">
-                <p class="text-xs font-bold text-white">{{ now()->format('H:i') }}</p>
-                <p class="text-[10px] text-gray-500">{{ now()->format('d M Y') }}</p>
+                <p class="text-xs font-bold text-white tabular-nums" data-realtime-clock>{{ now()->format('H:i') }}</p>
+                <p class="text-[10px] text-gray-500" data-realtime-date>{{ now()->format('d M Y') }}</p>
             </div>
             <div class="w-10 h-10 rounded-xl bg-linear-to-br from-gray-800 to-black border border-white/5 flex items-center justify-center">
                 <span class="material-symbols-outlined text-gray-400 text-lg">calendar_today</span>
@@ -70,3 +70,35 @@
         animation: swing 0.5s ease-in-out;
     }
 </style>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const clockEl = document.querySelector('[data-realtime-clock]');
+        const dateEl = document.querySelector('[data-realtime-date]');
+
+        if (!clockEl || !dateEl) return;
+
+        const timeFormatter = new Intl.DateTimeFormat('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+
+        const dateFormatter = new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        });
+
+        function updateRealtimeClock() {
+            const now = new Date();
+            clockEl.textContent = timeFormatter.format(now);
+            dateEl.textContent = dateFormatter.format(now).replace(',', '');
+        }
+
+        updateRealtimeClock();
+        setInterval(updateRealtimeClock, 1000);
+    });
+</script>
+@endpush

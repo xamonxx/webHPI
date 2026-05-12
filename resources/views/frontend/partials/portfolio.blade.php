@@ -22,7 +22,7 @@
             </div>
 
             <a href="{{ route('portfolio.all') }}" class="group flex items-center gap-3 text-white hover:text-primary transition-colors pb-2" data-aos="fade-left">
-                <span class="text-sm font-bold uppercase tracking-widest">Lihat Semua</span>
+                <span class="font-serif text-xl italic tracking-normal">Lihat Semua</span>
                 <div class="relative w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:border-primary/50 group-hover:bg-primary/10 transition-all">
                     <svg class="w-5 h-5 group-hover:-rotate-45 transition-transform duration-300" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -45,7 +45,7 @@
             $photoCount = count($item->all_images);
             @endphp
 
-            <a href="{{ route('portfolio.show', $item->id) }}" class="{{ $colSpan }} group relative rounded-3xl overflow-hidden cursor-pointer block" data-aos="fade-up" data-aos-delay="{{ $delay }}">
+            <a href="{{ route('portfolio.show', $item->id) }}" class="theme-keep-dark {{ $colSpan }} group relative rounded-3xl overflow-hidden cursor-pointer block" data-aos="fade-up" data-aos-delay="{{ $delay }}">
 
                 {{-- Image --}}
                 <div class="absolute inset-0 overflow-hidden">
@@ -62,14 +62,14 @@
                     </div>
                     @endif
                     @if($photoCount > 1)
-                    <span class="absolute top-4 right-4 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-md">
+                    <span class="theme-keep-dark absolute top-4 right-4 rounded-full border border-white/10 bg-black/55 px-3 py-1.5 text-[11px] font-bold text-white backdrop-blur-md">
                         {{ $photoCount }} Foto
                     </span>
                     @endif
                 </div>
 
                 {{-- Overlay --}}
-                <div class="absolute inset-0 bg-linear-to-t from-black/95 via-black/40 to-transparent opacity-90 transition-opacity duration-300"></div>
+                <div class="theme-keep-dark absolute inset-0 bg-linear-to-t from-black/95 via-black/40 to-transparent opacity-90 transition-opacity duration-300"></div>
 
                 {{-- Content --}}
                 <div class="absolute inset-0 p-8 flex flex-col justify-end z-20">

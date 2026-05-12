@@ -52,7 +52,9 @@ class Portfolio extends Model
 
     public function photos(): HasMany
     {
-        return $this->hasMany(PortfolioPhoto::class)->orderBy('sort_order')->orderBy('id');
+        return $this->hasMany(PortfolioPhoto::class)
+            ->orderBy('sort_order')
+            ->orderBy('id');
     }
 
     /**

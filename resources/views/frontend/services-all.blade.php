@@ -1,6 +1,18 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Layanan Desain Interior - Home Putra Interior')
+@php
+    $siteName = $settings['site_name'] ?? 'Home Putra Interior';
+    $pageTitle = "Layanan Desain Interior & Furniture Custom - {$siteName}";
+    $pageDescription = "Layanan desain interior, furniture custom, kitchen set, wardrobe, backdrop TV, dan renovasi dari {$siteName} untuk rumah dan bisnis.";
+@endphp
+
+@section('title', $pageTitle)
+@section('meta_title', $pageTitle)
+@section('meta_description', $pageDescription)
+@section('og_title', $pageTitle)
+@section('og_description', $pageDescription)
+@section('twitter_title', $pageTitle)
+@section('twitter_description', $pageDescription)
 
 @section('content')
 <div class="pt-24 sm:pt-32 pb-16 sm:pb-24 bg-background-dark min-h-screen relative overflow-hidden">
@@ -43,8 +55,8 @@
             $color = $colors[$index % count($colors)];
             $delay = ($index % 3) * 100;
             @endphp
-            <div class="group" data-aos="fade-up" data-aos-delay="{{ $delay }}">
-                <div class="h-full p-6 sm:p-8 bg-white/5 border border-white/10 rounded-2xl hover:border-primary/30 hover:bg-white/8 transition-all duration-300">
+            <div id="service-{{ $service->id }}" class="group" data-aos="fade-up" data-aos-delay="{{ $delay }}">
+                <div class="relative h-full p-6 sm:p-8 bg-white/5 border border-white/10 rounded-2xl hover:border-primary/30 hover:bg-white/8 transition-all duration-300">
 
                     {{-- Icon --}}
                     <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl {{ $color[0] }} flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300">
@@ -61,8 +73,8 @@
                     </p>
 
                     {{-- CTA --}}
-                    <a href="{{ route('home') }}#contact" class="inline-flex items-center gap-2 text-primary text-sm font-medium group-hover:gap-3 transition-all">
-                        <span>Konsultasi</span>
+                    <a href="{{ route('services.show', $service) }}" class="inline-flex items-center gap-2 text-primary text-sm font-medium group-hover:gap-3 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-4 focus-visible:ring-offset-background-dark rounded-full">
+                        <span>Selengkapnya</span>
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>

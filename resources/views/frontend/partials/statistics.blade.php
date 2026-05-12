@@ -19,6 +19,28 @@
             </div>
             @endforeach
         </div>
+        @else
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            @foreach([
+                ['number' => '12', 'suffix' => '+', 'label' => 'Tahun Pengalaman'],
+                ['number' => '500', 'suffix' => '+', 'label' => 'Proyek Selesai'],
+                ['number' => '98', 'suffix' => '%', 'label' => 'Klien Puas'],
+                ['number' => '24', 'suffix' => 'Jam', 'label' => 'Respon Konsultasi'],
+            ] as $index => $stat)
+            <div class="flex flex-col items-center justify-center text-center gap-1.5 group" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
+                <div class="flex items-baseline gap-1">
+                    <span class="font-serif text-3xl sm:text-4xl md:text-5xl text-white font-medium group-hover:text-primary transition-colors duration-300">
+                        <span class="counter" data-target="{{ $stat['number'] }}">0</span>
+                    </span>
+                    <span class="text-xl sm:text-2xl text-primary font-serif italic">{{ $stat['suffix'] }}</span>
+                </div>
+                <div class="h-[2px] w-8 bg-white/10 group-hover:bg-primary group-hover:w-12 transition-all duration-300 my-1.5"></div>
+                <span class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-bold text-gray-400 group-hover:text-gray-200 transition-colors">
+                    {{ $stat['label'] }}
+                </span>
+            </div>
+            @endforeach
+        </div>
         @endif
     </div>
 </section>

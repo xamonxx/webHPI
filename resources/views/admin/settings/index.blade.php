@@ -402,6 +402,23 @@
         activeBtn.classList.add('text-white', 'bg-white/10', 'border', 'border-white/10');
     }
 
+    // Image Preview
+    function previewImage(input, previewId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const container = input.closest('.flex.items-center').querySelector('.w-20');
+                container.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Preview';
+                img.className = 'max-h-full max-w-full object-contain';
+                container.appendChild(img);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
     // Character Counters
     document.addEventListener('DOMContentLoaded', function() {
         const titleInput = document.querySelector('input[name="seo_meta_title"]');

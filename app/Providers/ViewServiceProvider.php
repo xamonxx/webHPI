@@ -19,19 +19,35 @@ class ViewServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap services.
-     * Share settings with ALL views automatically.
+     *
+     * Uses scoped View::composer() instead of '*' wildcard to prevent
+     * running queries on every partial/component render. Each composer
+     * targets only the layout files, so queries execute once per request.
      */
     public function boot(): void
     {
-        // Share settings globally across ALL views
-        View::composer('*', function ($view) {
+        // Share settings with frontend layout (resolves once, inherited by all partials)
+        View::composer('frontend.layouts.app', function ($view) {
+            if (! isset($view->getData()['settings'])) {
+                $view->with('settings', SiteSetting::getAllAsArray());
+            }
+        });
+
+        // Share settings + unread count with admin layout only
+        View::composer('admin.layouts.app', function ($view) {
             if (! isset($view->getData()['settings'])) {
                 $view->with('settings', SiteSetting::getAllAsArray());
             }
 
-            // Share unread messages count for admin panel
             if (! isset($view->getData()['unreadMessagesCount'])) {
                 $view->with('unreadMessagesCount', ContactSubmission::unread()->count());
+            }
+        });
+
+        // Admin login page needs settings but not unread count
+        View::composer('admin.auth.login', function ($view) {
+            if (! isset($view->getData()['settings'])) {
+                $view->with('settings', SiteSetting::getAllAsArray());
             }
         });
     }

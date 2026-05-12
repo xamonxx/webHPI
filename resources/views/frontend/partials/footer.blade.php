@@ -61,8 +61,6 @@
                 <nav class="flex flex-col gap-3">
                     <a href="{{ route('home') }}" class="text-gray-400 hover:text-primary text-sm transition-colors">Tentang Kami</a>
                     <a href="{{ route('home') }}#contact" class="text-gray-400 hover:text-primary text-sm transition-colors">Hubungi Kami</a>
-                    <a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Kebijakan Privasi</a>
-                    <a href="#" class="text-gray-400 hover:text-primary text-sm transition-colors">Syarat & Ketentuan</a>
                 </nav>
             </div>
 
@@ -107,7 +105,7 @@
 
 
 {{-- Back to Top Button --}}
-<button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-4 sm:bottom-6 left-4 sm:left-6 z-50 w-10 h-10 sm:w-12 sm:h-12 bg-white/5 hover:bg-primary border border-white/10 hover:border-primary rounded-full flex items-center justify-center text-gray-400 hover:text-black transition-all duration-300 opacity-0 invisible" aria-label="Back to top">
+<button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-4 sm:bottom-6 left-4 sm:left-6 z-50 w-10 h-10 sm:w-12 sm:h-12 bg-white/5 hover:bg-primary border border-white/10 hover:border-primary rounded-full flex items-center justify-center text-gray-400 hover:text-black transition-all duration-300 opacity-0 invisible" aria-label="Kembali ke atas">
     <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
     </svg>

@@ -44,12 +44,12 @@
                     </p>
 
                     {{-- Link --}}
-                    <div class="mt-auto inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest group-hover:gap-3 transition-all">
+                    <a href="{{ route('services.show', $service) }}" class="mt-auto inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest group-hover:gap-3 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-4 focus-visible:ring-offset-background-dark rounded-full">
                         <span>Selengkapnya</span>
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                    </div>
+                    </a>
                 </div>
             </div>
             @endforeach

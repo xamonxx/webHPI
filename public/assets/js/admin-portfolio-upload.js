@@ -17,21 +17,24 @@
 
     if (!form || !input || !previewGrid || !countEl || !errorEl) return;
 
-    let items = (window.portfolioInitialPhotos || []).map((photo) => ({
+    const items = (window.portfolioInitialPhotos || []).map((photo) => ({
         type: 'existing',
         id: photo.id,
         url: photo.url,
         path: photo.path,
     }));
+    const removedIds = [];
 
-    let removedIds = [];
+    function showToast(message) {
+        if (typeof window.showAdminToast === 'function') {
+            window.showAdminToast(message, 'error');
+        }
+    }
 
     function showError(message) {
         errorEl.textContent = message;
         errorEl.classList.remove('hidden');
-        if (typeof window.showAdminToast === 'function') {
-            window.showAdminToast(message, 'error');
-        }
+        showToast(message);
     }
 
     function clearError() {
@@ -45,7 +48,7 @@
 
     function validateFiles(files) {
         if (items.length + files.length > MAX_PHOTOS) {
-            return 'Maksimal upload 5 foto.';
+            return `Maksimal upload ${MAX_PHOTOS} foto portfolio.`;
         }
 
         for (const file of files) {
@@ -118,7 +121,6 @@
     function render() {
         countEl.textContent = `${items.length} / ${MAX_PHOTOS}`;
         previewGrid.innerHTML = '';
-
         uploadZone?.classList.toggle('hidden', items.length >= MAX_PHOTOS);
 
         items.forEach((item, index) => {
@@ -127,8 +129,8 @@
             card.style.aspectRatio = '4 / 3';
             card.innerHTML = `
                 <img src="${item.url}" alt="Preview foto ${index + 1}" class="h-full w-full object-cover" loading="lazy">
-                <div class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-linear-to-t from-black/80 to-transparent p-2">
-                    <span class="rounded-full bg-black/70 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white">${index === 0 ? 'Cover' : 'Foto ' + (index + 1)}</span>
+                <div class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-linear-to-t from-black/85 to-transparent p-2">
+                    <span class="rounded-full bg-black/75 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white">${index === 0 ? 'Cover' : `Foto ${index + 1}`}</span>
                     <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white transition hover:bg-red-400" aria-label="Hapus foto">
                         <span class="material-symbols-outlined text-base">close</span>
                     </button>
@@ -151,6 +153,7 @@
         if (error) {
             showError(error);
             input.value = '';
+            rebuildFileInput();
             return;
         }
 
@@ -170,13 +173,13 @@
 
         if (items.length < 1) {
             event.preventDefault();
-            showError('Foto wajib berupa gambar.');
+            showError('Minimal 1 foto portfolio wajib tersedia.');
             return;
         }
 
         if (items.length > MAX_PHOTOS) {
             event.preventDefault();
-            showError('Maksimal upload 5 foto.');
+            showError(`Maksimal upload ${MAX_PHOTOS} foto portfolio.`);
             return;
         }
 

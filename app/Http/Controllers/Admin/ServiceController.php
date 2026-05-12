@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ServiceRequest;
 use App\Models\Service;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class ServiceController extends Controller
@@ -31,21 +32,24 @@ class ServiceController extends Controller
     /**
      * Store a newly created service
      */
-    public function store(Request $request): RedirectResponse
+    public function store(ServiceRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'icon' => 'required|string|max:50',
-            'display_order' => 'nullable|integer',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
-        // Handle defaults
         $validated['is_active'] = $request->boolean('is_active', true);
         $validated['display_order'] = $validated['display_order'] ?? 0;
 
-        Service::create($validated);
+        try {
+            Service::create($validated);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Layanan gagal ditambahkan, silakan coba lagi.');
+        }
+
+        $this->clearFrontendCache();
 
         return redirect()
             ->route('admin.services.index')
@@ -72,21 +76,24 @@ class ServiceController extends Controller
     /**
      * Update the specified service
      */
-    public function update(Request $request, Service $service): RedirectResponse
+    public function update(ServiceRequest $request, Service $service): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'icon' => 'required|string|max:50',
-            'display_order' => 'nullable|integer',
-            'is_active' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
         $validated['is_active'] = $request->boolean('is_active');
-        // Use existing order if not provided
         $validated['display_order'] = $validated['display_order'] ?? $service->display_order;
 
-        $service->update($validated);
+        try {
+            $service->update($validated);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Layanan gagal diperbarui, silakan coba lagi.');
+        }
+
+        $this->clearFrontendCache();
 
         return redirect()
             ->route('admin.services.index')
@@ -98,10 +105,24 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service): RedirectResponse
     {
-        $service->delete();
+        try {
+            $service->delete();
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return back()->with('error', 'Layanan gagal dihapus, silakan coba lagi.');
+        }
+
+        $this->clearFrontendCache();
 
         return redirect()
             ->route('admin.services.index')
             ->with('success', 'Layanan berhasil dihapus!');
+    }
+
+    private function clearFrontendCache(): void
+    {
+        Cache::forget('frontend.home.data');
+        Cache::forget('sitemap.xml');
     }
 }

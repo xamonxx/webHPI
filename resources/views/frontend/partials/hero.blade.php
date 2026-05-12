@@ -3,7 +3,7 @@
     Features: Rounded Pill Buttons, Smooth Gradients, Premium Typography
 --}}
 
-<header class="relative min-h-[100svh] flex items-center pt-20 pb-10 overflow-hidden" id="hero">
+<header class="theme-keep-dark relative min-h-[100svh] flex items-center pt-20 pb-10 overflow-hidden" id="hero">
     {{-- Dynamic Background --}}
     <div class="absolute inset-0 z-0">
         @php
@@ -70,7 +70,7 @@
                 @endif
 
                 @if(!empty($hero?->button2_text))
-                <a href="{{ $hero?->button2_link ?? '#' }}" class="hero-button group bg-white/5 backdrop-blur-md border border-white/20 text-white text-sm font-medium uppercase tracking-wider rounded-full hover:bg-white hover:text-black hover:border-white transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2">
+                <a href="{{ $hero?->button2_link ?: route('home').'#contact' }}" class="hero-button group bg-white/5 backdrop-blur-md border border-white/20 text-white text-sm font-medium uppercase tracking-wider rounded-full hover:bg-white hover:text-black hover:border-white transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2">
                     {{ $hero?->button2_text }}
                 </a>
                 @endif

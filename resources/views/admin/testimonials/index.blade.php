@@ -110,7 +110,8 @@
                             </a>
 
                             <button type="button"
-                                onclick="openDeleteModal('{{ $item->id }}', '{{ $item->client_name }}')"
+                                data-delete-url="{{ route('admin.testimonials.destroy', $item->id) }}"
+                                data-delete-name="{{ $item->client_name }}"
                                 class="p-2 rounded-lg text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors" title="Hapus">
                                 <span class="material-symbols-outlined text-lg">delete</span>
                             </button>
@@ -196,14 +197,14 @@
 
 @push('scripts')
 <script>
-    function openDeleteModal(id, name) {
+    function openDeleteModal(url, name) {
         const modal = document.getElementById('deleteModal');
         const modalContent = document.getElementById('deleteModalContent');
         const deleteForm = document.getElementById('deleteForm');
         const deleteItemName = document.getElementById('deleteItemName');
 
         // Set the form action and item name
-        deleteForm.action = `/admin/testimonials/${id}`;
+        deleteForm.action = url;
         deleteItemName.textContent = name;
 
         // Show modal
@@ -216,6 +217,12 @@
             modalContent.classList.add('scale-100', 'opacity-100');
         }, 10);
     }
+
+    document.querySelectorAll('[data-delete-url]').forEach((button) => {
+        button.addEventListener('click', () => {
+            openDeleteModal(button.dataset.deleteUrl, button.dataset.deleteName);
+        });
+    });
 
     function closeDeleteModal() {
         const modal = document.getElementById('deleteModal');

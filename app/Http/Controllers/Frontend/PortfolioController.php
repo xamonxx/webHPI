@@ -22,7 +22,7 @@ class PortfolioController extends Controller
             $query->where('category', $category);
         }
 
-        $portfolios = $query->paginate(12);
+        $portfolios = $query->paginate(12)->withQueryString();
 
         // Get unique categories for filter
         $categories = Portfolio::active()

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SettingRequest;
 use App\Models\SiteSetting;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class SettingController extends Controller
 {
@@ -22,76 +25,73 @@ class SettingController extends Controller
     /**
      * Update the settings.
      */
-    public function update(Request $request)
+    public function update(SettingRequest $request)
     {
-        $request->validate([
-            'site_name' => 'nullable|string|max:255',
-            'site_tagline' => 'nullable|string|max:500',
-            'site_description' => 'nullable|string|max:1000',
-            'site_logo' => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
-            'site_favicon' => 'nullable|image|mimes:png,ico,svg|max:512',
+        $settings = [
+            ['key' => 'site_name', 'value' => $request->site_name, 'type' => 'text', 'group' => 'general'],
+            ['key' => 'site_tagline', 'value' => $request->site_tagline, 'type' => 'text', 'group' => 'general'],
+            ['key' => 'site_description', 'value' => $request->site_description, 'type' => 'textarea', 'group' => 'general'],
+            ['key' => 'contact_email', 'value' => $request->contact_email, 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'contact_phone', 'value' => $request->contact_phone, 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'whatsapp_number', 'value' => $request->whatsapp_number, 'type' => 'text', 'group' => 'contact'],
+            ['key' => 'contact_address', 'value' => $request->contact_address, 'type' => 'textarea', 'group' => 'contact'],
+            ['key' => 'instagram_url', 'value' => $request->instagram_url, 'type' => 'text', 'group' => 'social'],
+            ['key' => 'facebook_url', 'value' => $request->facebook_url, 'type' => 'text', 'group' => 'social'],
+            ['key' => 'tiktok_url', 'value' => $request->tiktok_url, 'type' => 'text', 'group' => 'social'],
+            ['key' => 'youtube_url', 'value' => $request->youtube_url, 'type' => 'text', 'group' => 'social'],
+            ['key' => 'seo_meta_title', 'value' => $request->seo_meta_title, 'type' => 'text', 'group' => 'seo'],
+            ['key' => 'seo_meta_description', 'value' => $request->seo_meta_description, 'type' => 'textarea', 'group' => 'seo'],
+            ['key' => 'seo_keywords', 'value' => $request->seo_keywords, 'type' => 'text', 'group' => 'seo'],
+            ['key' => 'google_analytics_id', 'value' => $request->google_analytics_id, 'type' => 'text', 'group' => 'seo'],
+        ];
 
-            'contact_email' => 'nullable|email|max:255',
-            'contact_phone' => 'nullable|string|max:30',
-            'whatsapp_number' => 'nullable|string|max:20',
-            'contact_address' => 'nullable|string|max:500',
+        $newUploads = [];
+        $oldFilesToDelete = [];
 
-            'instagram_url' => 'nullable|url|max:255',
-            'facebook_url' => 'nullable|url|max:255',
-            'tiktok_url' => 'nullable|url|max:255',
-            'youtube_url' => 'nullable|url|max:255',
-
-            'seo_meta_title' => 'nullable|string|max:70',
-            'seo_meta_description' => 'nullable|string|max:160',
-            'seo_keywords' => 'nullable|string|max:255',
-            'google_analytics_id' => 'nullable|string|max:50',
-        ]);
-
-        // Handle General Settings
-        SiteSetting::set('site_name', $request->site_name, 'text', 'general');
-        SiteSetting::set('site_tagline', $request->site_tagline, 'text', 'general');
-        SiteSetting::set('site_description', $request->site_description, 'textarea', 'general');
-
-        // Handle Logo Upload
         if ($request->hasFile('site_logo')) {
             $oldLogo = SiteSetting::get('site_logo');
-            if ($oldLogo && Storage::disk('public')->exists($oldLogo)) {
-                Storage::disk('public')->delete($oldLogo);
-            }
             $logoPath = $request->file('site_logo')->store('settings', 'public');
-            SiteSetting::set('site_logo', $logoPath, 'image', 'general');
+
+            $settings[] = ['key' => 'site_logo', 'value' => $logoPath, 'type' => 'image', 'group' => 'general'];
+            $newUploads[] = $logoPath;
+
+            if ($oldLogo && Storage::disk('public')->exists($oldLogo)) {
+                $oldFilesToDelete[] = $oldLogo;
+            }
         }
 
-        // Handle Favicon Upload
         if ($request->hasFile('site_favicon')) {
             $oldFavicon = SiteSetting::get('site_favicon');
-            if ($oldFavicon && Storage::disk('public')->exists($oldFavicon)) {
-                Storage::disk('public')->delete($oldFavicon);
-            }
             $faviconPath = $request->file('site_favicon')->store('settings', 'public');
-            SiteSetting::set('site_favicon', $faviconPath, 'image', 'general');
+
+            $settings[] = ['key' => 'site_favicon', 'value' => $faviconPath, 'type' => 'image', 'group' => 'general'];
+            $newUploads[] = $faviconPath;
+
+            if ($oldFavicon && Storage::disk('public')->exists($oldFavicon)) {
+                $oldFilesToDelete[] = $oldFavicon;
+            }
         }
 
-        // Handle Contact Settings (using original keys for backward compatibility)
-        SiteSetting::set('contact_email', $request->contact_email, 'text', 'contact');
-        SiteSetting::set('contact_phone', $request->contact_phone, 'text', 'contact');
-        SiteSetting::set('whatsapp_number', $request->whatsapp_number, 'text', 'contact');
-        SiteSetting::set('contact_address', $request->contact_address, 'textarea', 'contact');
+        try {
+            DB::transaction(fn () => SiteSetting::setMany($settings));
+        } catch (Throwable $exception) {
+            foreach ($newUploads as $path) {
+                Storage::disk('public')->delete($path);
+            }
 
-        // Handle Social Settings (using original keys for backward compatibility)
-        SiteSetting::set('instagram_url', $request->instagram_url, 'text', 'social');
-        SiteSetting::set('facebook_url', $request->facebook_url, 'text', 'social');
-        SiteSetting::set('tiktok_url', $request->tiktok_url, 'text', 'social');
-        SiteSetting::set('youtube_url', $request->youtube_url, 'text', 'social');
+            report($exception);
 
-        // Handle SEO Settings
-        SiteSetting::set('seo_meta_title', $request->seo_meta_title, 'text', 'seo');
-        SiteSetting::set('seo_meta_description', $request->seo_meta_description, 'textarea', 'seo');
-        SiteSetting::set('seo_keywords', $request->seo_keywords, 'text', 'seo');
-        SiteSetting::set('google_analytics_id', $request->google_analytics_id, 'text', 'seo');
+            return back()
+                ->withInput()
+                ->with('error', 'Pengaturan gagal disimpan, silakan coba lagi.');
+        }
 
-        // Clear all cache
-        SiteSetting::clearCache();
+        foreach ($oldFilesToDelete as $path) {
+            Storage::disk('public')->delete($path);
+        }
+
+        Cache::forget('frontend.home.data');
+        Cache::forget('sitemap.xml');
 
         return redirect()->route('admin.settings.index')->with('success', 'Pengaturan berhasil disimpan!');
     }

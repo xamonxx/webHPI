@@ -45,6 +45,43 @@ class SiteSetting extends Model
     }
 
     /**
+     * Set multiple setting rows with one database upsert.
+     *
+     * @param  array<int, array{key:string,value:mixed,type?:string,group?:string}>  $settings
+     */
+    public static function setMany(array $settings): void
+    {
+        if (empty($settings)) {
+            return;
+        }
+
+        $now = now();
+        $rows = collect($settings)
+            ->map(fn (array $setting) => [
+                'setting_key' => $setting['key'],
+                'setting_value' => $setting['value'],
+                'setting_type' => $setting['type'] ?? 'text',
+                'setting_group' => $setting['group'] ?? 'general',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])
+            ->values()
+            ->all();
+
+        static::upsert(
+            $rows,
+            ['setting_key'],
+            ['setting_value', 'setting_type', 'setting_group', 'updated_at']
+        );
+
+        Cache::forget('settings.all');
+
+        foreach ($settings as $setting) {
+            Cache::forget("setting.{$setting['key']}");
+        }
+    }
+
+    /**
      * Get all settings as key-value array
      */
     public static function getAllAsArray(): array

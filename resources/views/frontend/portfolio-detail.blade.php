@@ -1,6 +1,25 @@
 @extends('frontend.layouts.app')
 
-@section('title', ($portfolio->title ?? 'Detail Proyek') . ' - Home Putra Interior')
+@php
+    $siteName = $settings['site_name'] ?? 'Home Putra Interior';
+    $projectTitle = $portfolio->title ?? 'Detail Proyek';
+    $pageTitle = "{$projectTitle} - {$siteName}";
+    $pageDescription = $portfolio->description
+        ? \Illuminate\Support\Str::limit(strip_tags($portfolio->description), 155)
+        : "Detail proyek {$projectTitle} dari {$siteName}. Lihat inspirasi desain interior dan furniture custom untuk hunian atau bisnis Anda.";
+@endphp
+
+@section('title', $pageTitle)
+@section('meta_title', $pageTitle)
+@section('meta_description', $pageDescription)
+@section('og_title', $pageTitle)
+@section('og_description', $pageDescription)
+@section('twitter_title', $pageTitle)
+@section('twitter_description', $pageDescription)
+@if($portfolio->image_url)
+    @section('og_image', $portfolio->image_url)
+    @section('twitter_image', $portfolio->image_url)
+@endif
 
 @section('content')
 @php
@@ -11,7 +30,7 @@
 
 <main class="bg-background-dark text-white overflow-hidden">
     {{-- Project Hero --}}
-    <section class="relative min-h-[100svh] pt-24 pb-14 flex items-end overflow-hidden">
+    <section id="portfolio-hero" class="theme-keep-dark relative min-h-[100svh] pt-24 pb-14 flex items-end overflow-hidden">
         <div class="absolute inset-0 z-0">
             @if($imageUrl)
             <img src="{{ $imageUrl }}" alt="{{ $portfolio->title }}" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high" decoding="async">
@@ -107,7 +126,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
                 {{-- Left: Image Slider --}}
                 <div class="lg:col-span-7 flex flex-col">
-                    <div class="relative overflow-hidden group w-full slider-frame"
+                    <div class="theme-keep-dark relative overflow-hidden group w-full slider-frame"
                         @touchstart="touchStart($event)" @touchmove="touchMove($event)" @touchend="touchEnd($event, 'slider')">
                         @if(count($allImages) > 0)
                         <img @click="openFromSlider()"
@@ -178,7 +197,7 @@
             x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
             x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
             @keydown.escape.window="closeLightbox()"
-            class="fixed inset-0 z-[100000] flex items-center justify-center">
+            class="theme-keep-dark fixed inset-0 z-[100000] flex items-center justify-center">
             <div class="absolute inset-0 bg-black/95" @click="closeLightbox()"></div>
             <button @click="closeLightbox()" class="absolute top-5 right-5 z-20 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
                 <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -213,11 +232,11 @@
                     </div>
                     <h2 class="text-3xl sm:text-5xl text-white font-serif leading-tight">Proyek <span class="text-primary italic">Terkait</span></h2>
                 </div>
-                <a href="{{ route('portfolio.all') }}" class="text-sm font-bold uppercase tracking-widest text-gray-300 hover:text-primary transition-colors">Lihat Semua</a>
+                <a href="{{ route('portfolio.all') }}" class="font-serif text-xl italic tracking-normal text-gray-300 hover:text-primary transition-colors">Lihat Semua</a>
             </div>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
                 @foreach($related as $rel)
-                <a href="{{ route('portfolio.show', $rel->id) }}" class="group relative overflow-hidden rounded-xl sm:rounded-3xl border border-white/10 bg-white/5 aspect-[3/4] sm:aspect-[4/5]">
+                <a href="{{ route('portfolio.show', $rel->id) }}" class="theme-keep-dark group relative overflow-hidden rounded-xl sm:rounded-3xl border border-white/10 bg-white/5 aspect-[3/4] sm:aspect-[4/5]">
                     @if($rel->image_url)
                     <img src="{{ $rel->image_url }}" alt="{{ $rel->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
                     @else
@@ -252,133 +271,108 @@
     @keyframes fadeBlurIn {
         from { opacity: 0; filter: blur(6px); transform: scale(1.02); }
         to   { opacity: 1; filter: blur(0);   transform: scale(1); }
-    }
-</style>
+     }
+ </style>
 
-<script>
-    function portfolioSlider() {
-        return {
-            images: @json($allImages),
-            current: 0,
-            transitioning: false,
-            lightboxOpen: false,
-            lightboxIdx: 0,
-            isMobile: window.innerWidth < 1024,
-            slideClass: '',
-            lbSlideClass: '',
-            dragStyle: '',
-            lbDragStyle: '',
-            _touchStartX: 0,
-            _touchStartY: 0,
-            _touchTime: 0,
-
-            init() {
-                // Update isMobile on resize
-                window.addEventListener('resize', () => { this.isMobile = window.innerWidth < 1024; });
-            },
-
-            touchStart(e) {
-                const t = e.touches[0];
-                this._touchStartX = t.clientX;
-                this._touchStartY = t.clientY;
-                this._touchTime = Date.now();
-            },
-
-            touchMove(e) {
-                if (this.images.length <= 1) return;
-                const t = e.touches[0];
-                const dx = t.clientX - this._touchStartX;
-                const dy = t.clientY - this._touchStartY;
-
-                // Only intercept horizontal swipes; let vertical scroll pass through
-                if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) {
-                    e.preventDefault(); // Block only horizontal drag
-                    const opacity = 1 - Math.abs(dx) / 400;
-                    const blur = Math.min(Math.abs(dx) / 30, 6);
-                    const style = `opacity: ${Math.max(0.3, opacity)}; filter: blur(${blur}px); transition: none;`;
-                    if (this.lightboxOpen) {
-                        this.lbDragStyle = style;
-                    } else {
-                        this.dragStyle = style;
-                    }
-                }
-            },
-
-            touchEnd(e, target) {
-                const t = e.changedTouches[0];
-                const dx = t.clientX - this._touchStartX;
-                const dy = t.clientY - this._touchStartY;
-                const elapsed = Date.now() - this._touchTime;
-
-                this.dragStyle = '';
-                this.lbDragStyle = '';
-
-                if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-                    if (target === 'slider') {
-                        this.fadeSwitch(dx < 0 ? 'next' : 'prev');
-                    } else {
-                        this.lbFadeSwitch(dx < 0 ? 'next' : 'prev');
-                    }
-                } else if (target === 'slider' && Math.abs(dx) < 10 && elapsed < 300) {
-                    // Tap on mobile does nothing; on desktop opens lightbox
-                    if (!this.isMobile) this.openFromSlider();
-                }
-            },
-
-            // Fade + blur transition for slider
-            fadeSwitch(dir) {
-                if (this.transitioning) return;
-                this.transitioning = true;
-                const nextIdx = dir === 'next'
-                    ? (this.current + 1) % this.images.length
-                    : (this.current - 1 + this.images.length) % this.images.length;
-
-                this.slideClass = 'fade-out';
-                setTimeout(() => {
-                    this.current = nextIdx;
-                    this.slideClass = 'fade-in';
-                    setTimeout(() => { this.slideClass = ''; this.transitioning = false; }, 400);
-                }, 300);
-            },
-
-            // Fade + blur transition for lightbox
-            lbFadeSwitch(dir) {
-                const nextIdx = dir === 'next'
-                    ? (this.lightboxIdx + 1) % this.images.length
-                    : (this.lightboxIdx - 1 + this.images.length) % this.images.length;
-
-                this.lbSlideClass = 'fade-out';
-                setTimeout(() => {
-                    this.lightboxIdx = nextIdx;
-                    this.lbSlideClass = 'fade-in';
-                    setTimeout(() => { this.lbSlideClass = ''; }, 400);
-                }, 300);
-            },
-
-            openFromSlider() {
-                if (this.isMobile) return; // No lightbox on mobile
-                this.lightboxIdx = this.current;
-                this.lightboxOpen = true;
-                document.body.style.overflow = 'hidden';
-            },
-
-            closeLightbox() { this.lightboxOpen = false; document.body.style.overflow = ''; },
-
-            goTo(idx) {
-                if (idx === this.current || this.transitioning) return;
-                this.transitioning = true;
-                this.slideClass = 'fade-out';
-                setTimeout(() => {
-                    this.current = idx;
-                    this.slideClass = 'fade-in';
-                    setTimeout(() => { this.slideClass = ''; this.transitioning = false; }, 400);
-                }, 300);
-            },
-
-            next() { this.fadeSwitch('next'); },
-            prev() { this.fadeSwitch('prev'); }
-        }
-    }
-</script>
-@endsection
+ <script>
+     window.portfolioSlider = function() {
+         return {
+             images: @json($allImages),
+             current: 0,
+             transitioning: false,
+             lightboxOpen: false,
+             lightboxIdx: 0,
+             isMobile: window.innerWidth < 1024,
+             slideClass: '',
+             lbSlideClass: '',
+             dragStyle: '',
+             lbDragStyle: '',
+             _touchStartX: 0,
+             _touchStartY: 0,
+             _touchTime: 0,
+             init() {
+                 window.addEventListener('resize', () => { this.isMobile = window.innerWidth < 1024; });
+             },
+             touchStart(e) {
+                 const t = e.touches[0];
+                 this._touchStartX = t.clientX;
+                 this._touchStartY = t.clientY;
+                 this._touchTime = Date.now();
+             },
+             touchMove(e) {
+                 if (this.images.length <= 1) return;
+                 const t = e.touches[0];
+                 const dx = t.clientX - this._touchStartX;
+                 const dy = t.clientY - this._touchStartY;
+                 if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) {
+                     e.preventDefault();
+                     const opacity = 1 - Math.abs(dx) / 400;
+                     const blur = Math.min(Math.abs(dx) / 30, 6);
+                     const style = `opacity: ${Math.max(0.3, opacity)}; filter: blur(${blur}px); transition: none;`;
+                     this.lightboxOpen ? this.lbDragStyle = style : this.dragStyle = style;
+                 }
+             },
+             touchEnd(e, target) {
+                 const t = e.changedTouches[0];
+                 const dx = t.clientX - this._touchStartX;
+                 const dy = t.clientY - this._touchStartY;
+                 const elapsed = Date.now() - this._touchTime;
+                 this.dragStyle = '';
+                 this.lbDragStyle = '';
+                 if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+                     if (target === 'slider') {
+                         this.fadeSwitch(dx < 0 ? 'next' : 'prev');
+                     } else {
+                         this.lbFadeSwitch(dx < 0 ? 'next' : 'prev');
+                     }
+                 } else if (target === 'slider' && Math.abs(dx) < 10 && elapsed < 300 && !this.isMobile) {
+                     this.openFromSlider();
+                 }
+             },
+             fadeSwitch(dir) {
+                 if (this.transitioning) return;
+                 this.transitioning = true;
+                 const nextIdx = dir === 'next'
+                     ? (this.current + 1) % this.images.length
+                     : (this.current - 1 + this.images.length) % this.images.length;
+                 this.slideClass = 'fade-out';
+                 setTimeout(() => {
+                     this.current = nextIdx;
+                     this.slideClass = 'fade-in';
+                     setTimeout(() => { this.slideClass = ''; this.transitioning = false; }, 400);
+                 }, 300);
+             },
+             lbFadeSwitch(dir) {
+                 const nextIdx = dir === 'next'
+                     ? (this.lightboxIdx + 1) % this.images.length
+                     : (this.lightboxIdx - 1 + this.images.length) % this.images.length;
+                 this.lbSlideClass = 'fade-out';
+                 setTimeout(() => {
+                     this.lightboxIdx = nextIdx;
+                     this.lbSlideClass = 'fade-in';
+                     setTimeout(() => { this.lbSlideClass = ''; }, 400);
+                 }, 300);
+             },
+             openFromSlider() {
+                 this.lightboxIdx = this.current;
+                 this.lightboxOpen = true;
+                 document.body.style.overflow = 'hidden';
+             },
+             closeLightbox() { this.lightboxOpen = false; document.body.style.overflow = ''; },
+             goTo(idx) {
+                 if (idx === this.current || this.transitioning) return;
+                 this.transitioning = true;
+                 this.slideClass = 'fade-out';
+                 setTimeout(() => {
+                     this.current = idx;
+                     this.slideClass = 'fade-in';
+                     setTimeout(() => { this.slideClass = ''; this.transitioning = false; }, 400);
+                 }, 300);
+             },
+             next() { this.fadeSwitch('next'); },
+             prev() { this.fadeSwitch('prev'); }
+         };
+     };
+ </script>
+ @endsection
 

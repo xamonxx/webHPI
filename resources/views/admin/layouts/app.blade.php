@@ -122,12 +122,19 @@
 
             const toast = document.createElement('div');
             toast.className = `pointer-events-auto translate-x-6 opacity-0 transition-all duration-300 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur-xl ${palette[type] || palette.error}`;
-            toast.innerHTML = `
-                <div class="flex items-start gap-3">
-                    <span class="material-symbols-outlined text-lg leading-none mt-0.5">${icons[type] || icons.error}</span>
-                    <p class="text-sm font-medium leading-relaxed">${message}</p>
-                </div>
-            `;
+
+            // Build DOM safely to prevent XSS -- never inject message via innerHTML
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex items-start gap-3';
+            const iconEl = document.createElement('span');
+            iconEl.className = 'material-symbols-outlined text-lg leading-none mt-0.5';
+            iconEl.textContent = icons[type] || icons.error;
+            const msgEl = document.createElement('p');
+            msgEl.className = 'text-sm font-medium leading-relaxed';
+            msgEl.textContent = message;
+            wrapper.appendChild(iconEl);
+            wrapper.appendChild(msgEl);
+            toast.appendChild(wrapper);
 
             container.appendChild(toast);
 

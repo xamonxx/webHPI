@@ -27,6 +27,7 @@ Route::get('/portfolio/{portfolio}', [PortfolioController::class, 'show'])->name
 
 // Services
 Route::get('/services', [ServiceController::class, 'index'])->name('services.all');
+Route::get('/services/{service}', [ServiceController::class, 'show'])->name('services.show');
 
 // --- AUTHENTICATION SAFETY NET ---
 // Fixes "Route [login] not defined" error if generic auth middleware triggers

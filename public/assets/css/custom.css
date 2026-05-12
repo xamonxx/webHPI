@@ -283,55 +283,6 @@ html.brand-intro-skip .brand-intro {
     }
 }
 
-/* Magnetic effect for buttons */
-.magnetic {
-    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-/* Split text animation */
-.split-text .char {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(50px) rotateX(90deg);
-    animation: splitReveal 0.6s ease forwards;
-}
-
-@keyframes splitReveal {
-    to {
-        opacity: 1;
-        transform: translateY(0) rotateX(0);
-    }
-}
-
-/* Cursor follower */
-.cursor-follower {
-    position: fixed;
-    width: 40px;
-    height: 40px;
-    border: 2px solid #ffb204;
-    border-radius: 50%;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease;
-    z-index: 9999;
-    mix-blend-mode: difference;
-}
-
-.cursor-follower.active {
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 178, 4, 0.1);
-}
-
-/* Image parallax container */
-.parallax-container {
-    overflow: hidden;
-}
-
-.parallax-container img {
-    transition: transform 0.5s ease-out;
-}
-
 /* Morphing shapes background */
 .morph-bg {
     position: absolute;
@@ -583,10 +534,6 @@ input[type="range"]::-moz-range-thumb {
     /* Disable heavy effects on mobile for better performance */
     .morph-bg {
         animation: none !important;
-    }
-
-    .cursor-follower {
-        display: none !important;
     }
 
     /* Ensure buttons and interactive elements are always visible */

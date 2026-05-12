@@ -88,8 +88,9 @@
                 </a>
 
                 <button type="button"
-                    onclick="openDeleteModal('{{ $message->id }}', '{{ $message->full_name }}')"
-                    class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 font-bold rounded-lg transition-colors flex items-center gap-2">
+                    data-delete-id="{{ $message->id }}"
+                    data-delete-name="{{ $message->full_name }}"
+                    class="btn-delete px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 font-bold rounded-lg transition-colors flex items-center gap-2">
                     <span class="material-symbols-outlined">delete</span>
                     Hapus
                 </button>
@@ -149,14 +150,16 @@
 
 @push('scripts')
 <script>
+    const deleteBaseUrl = @json(rtrim(route('admin.messages.destroy', ['message' => '__ID__']), '__ID__'));
+
     function openDeleteModal(id, name) {
         const modal = document.getElementById('deleteModal');
         const modalContent = document.getElementById('deleteModalContent');
         const deleteForm = document.getElementById('deleteForm');
         const deleteItemName = document.getElementById('deleteItemName');
 
-        // Set the form action and item name
-        deleteForm.action = `/admin/messages/${id}`;
+        // Use Laravel route with ID replacement instead of hardcoded path
+        deleteForm.action = deleteBaseUrl + id;
         deleteItemName.textContent = name;
 
         // Show modal
@@ -189,6 +192,14 @@
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeDeleteModal();
+        }
+    });
+
+    // Event delegation for delete buttons -- safe from XSS (uses data attributes)
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn-delete');
+        if (btn) {
+            openDeleteModal(btn.dataset.deleteId, btn.dataset.deleteName);
         }
     });
 </script>

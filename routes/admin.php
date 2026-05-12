@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ContactSubmissionController;
+use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HeroController;
 use App\Http\Controllers\Admin\PortfolioController;
@@ -8,8 +9,6 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StatisticController;
 use App\Http\Controllers\Admin\TestimonialController;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,40 +25,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Auth Routes (Public - no middleware)
-Route::get('/login', function () {
-    return view('admin.auth.login');
-})->name('admin.login')->middleware('guest');
-
-Route::post('/login', function () {
-    $credentials = request()->validate([
-        'username' => 'required|string',
-        'password' => 'required|string',
-    ]);
-
-    // Try to authenticate with username
-    if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
-        request()->session()->regenerate();
-
-        // Update last login
-        /** @var User $user */
-        $user = Auth::user();
-        $user->update(['last_login' => now()]);
-
-        return redirect()->intended(route('admin.dashboard'));
-    }
-
-    return back()->withErrors([
-        'username' => 'Username atau password salah.',
-    ])->onlyInput('username');
-})->middleware('guest');
-
-Route::post('/logout', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-
-    return redirect()->route('admin.login');
-})->name('admin.logout');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('admin.login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->middleware(['guest', 'throttle:5,1']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
 // Protected Admin Routes
 Route::middleware(['admin'])->group(function () {

@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\PortfolioRequest;
 use App\Models\Portfolio;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -16,11 +17,11 @@ use Throwable;
 
 class PortfolioController extends Controller
 {
-    private const MAX_PHOTOS = 5;
-
     private const PHOTO_DISK = 'public';
 
     private const PHOTO_DIRECTORY = 'portfolio';
+
+    private const MAX_PHOTOS = 5;
 
     public function index(): View
     {
@@ -36,7 +37,9 @@ class PortfolioController extends Controller
 
     public function create(): View
     {
-        return view('admin.portfolio.create');
+        $categories = $this->portfolioCategories();
+
+        return view('admin.portfolio.create', compact('categories'));
     }
 
     public function store(PortfolioRequest $request): RedirectResponse
@@ -63,6 +66,8 @@ class PortfolioController extends Controller
                 ->withErrors(['photos' => 'Upload gagal, silakan coba lagi.']);
         }
 
+        $this->clearFrontendCache();
+
         return redirect()
             ->route('admin.portfolio.index')
             ->with('success', 'Portfolio berhasil ditambahkan!');
@@ -78,8 +83,9 @@ class PortfolioController extends Controller
     public function edit(Portfolio $portfolio): View
     {
         $portfolio->load('photos');
+        $categories = $this->portfolioCategories($portfolio->category);
 
-        return view('admin.portfolio.edit', compact('portfolio'));
+        return view('admin.portfolio.edit', compact('portfolio', 'categories'));
     }
 
     public function update(PortfolioRequest $request, Portfolio $portfolio): RedirectResponse
@@ -87,39 +93,36 @@ class PortfolioController extends Controller
         $portfolio->load('photos');
 
         $validated = $request->validated();
-        $newPaths = [];
-        $pathsToDeleteAfterCommit = [];
-
         $currentPhotoIds = $portfolio->photos->pluck('id');
-
         $existingPhotoIds = collect($validated['existing_photos'] ?? $currentPhotoIds->all())
             ->map(fn ($id) => (int) $id)
             ->unique()
             ->intersect($currentPhotoIds);
-
         $removedPhotoIds = collect($validated['removed_photos'] ?? [])
             ->map(fn ($id) => (int) $id)
             ->unique()
             ->intersect($currentPhotoIds);
-
         $keptPhotoIds = $existingPhotoIds->diff($removedPhotoIds)->values();
         $newFiles = $request->file('photos', []);
         $newFileCount = is_array($newFiles) ? count($newFiles) : 0;
         $finalPhotoCount = $keptPhotoIds->count() + $newFileCount;
 
-        if ($finalPhotoCount > self::MAX_PHOTOS) {
-            return back()
-                ->withInput()
-                ->withErrors(['photos' => 'Maksimal upload 5 foto.'])
-                ->with('error', 'Maksimal upload 5 foto.');
-        }
-
         if ($finalPhotoCount < 1) {
             return back()
                 ->withInput()
-                ->withErrors(['photos' => 'Foto wajib berupa gambar.'])
-                ->with('error', 'Foto wajib berupa gambar.');
+                ->withErrors(['photos' => 'Minimal 1 foto portfolio wajib tersedia.'])
+                ->with('error', 'Minimal 1 foto portfolio wajib tersedia.');
         }
+
+        if ($finalPhotoCount > self::MAX_PHOTOS) {
+            return back()
+                ->withInput()
+                ->withErrors(['photos' => 'Maksimal upload '.self::MAX_PHOTOS.' foto portfolio.'])
+                ->with('error', 'Maksimal upload '.self::MAX_PHOTOS.' foto portfolio.');
+        }
+
+        $newPaths = [];
+        $pathsToDeleteAfterCommit = [];
 
         try {
             $newPaths = $this->storeUploadedPhotos($newFiles);
@@ -132,15 +135,13 @@ class PortfolioController extends Controller
                 $newPaths,
                 &$pathsToDeleteAfterCommit
             ) {
-                $photoQuery = $portfolio->photos();
-
-                $pathsToDeleteAfterCommit = $photoQuery
+                $pathsToDeleteAfterCommit = $portfolio->photos()
                     ->whereIn('id', $removedPhotoIds)
                     ->pluck('path')
                     ->all();
 
                 if ($removedPhotoIds->isNotEmpty()) {
-                    $photoQuery->whereIn('id', $removedPhotoIds)->delete();
+                    $portfolio->photos()->whereIn('id', $removedPhotoIds)->delete();
                 }
 
                 $nextOrder = $portfolio->photos()->max('sort_order') ?: 0;
@@ -152,13 +153,8 @@ class PortfolioController extends Controller
                 }
 
                 $portfolio->load('photos');
-                $orderedPaths = $portfolio->photos
-                    ->sortBy('sort_order')
-                    ->pluck('path')
-                    ->values()
-                    ->all();
-
-                $portfolio->update($this->portfolioPayload($validated, $request, $orderedPaths));
+                $paths = $portfolio->photos->pluck('path')->values()->all();
+                $portfolio->update($this->portfolioPayload($validated, $request, $paths));
             });
         } catch (Throwable $exception) {
             $this->deleteFiles($newPaths);
@@ -174,6 +170,8 @@ class PortfolioController extends Controller
         }
 
         $this->deleteFiles($pathsToDeleteAfterCommit);
+
+        $this->clearFrontendCache();
 
         return redirect()
             ->route('admin.portfolio.index')
@@ -198,6 +196,8 @@ class PortfolioController extends Controller
 
         $this->deleteFiles($paths);
 
+        $this->clearFrontendCache();
+
         return redirect()
             ->route('admin.portfolio.index')
             ->with('success', 'Portfolio berhasil dihapus!');
@@ -217,6 +217,36 @@ class PortfolioController extends Controller
             'is_featured' => $request->boolean('is_featured'),
             'is_active' => $request->boolean('is_active', true),
         ];
+    }
+
+    private function portfolioCategories(?string $currentCategory = null): Collection
+    {
+        $defaultCategories = [
+            'Kitchen Set',
+            'Lemari & Wardrobe',
+            'Backdrop TV',
+            'Wallpanel',
+            'Interior Design',
+            'Furniture Custom',
+            'Renovation',
+            'Komersial',
+            'Residensial',
+        ];
+
+        $storedCategories = Portfolio::query()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->orderBy('category')
+            ->pluck('category')
+            ->all();
+
+        return collect($defaultCategories)
+            ->merge($storedCategories)
+            ->when($currentCategory, fn (Collection $categories) => $categories->push($currentCategory))
+            ->filter(fn ($category) => is_string($category) && trim($category) !== '')
+            ->map(fn (string $category) => trim($category))
+            ->unique()
+            ->values();
     }
 
     private function storeUploadedPhotos(array $files): array
@@ -265,5 +295,11 @@ class PortfolioController extends Controller
                     ]);
                 }
             });
+    }
+
+    private function clearFrontendCache(): void
+    {
+        Cache::forget('frontend.home.data');
+        Cache::forget('sitemap.xml');
     }
 }

@@ -1,20 +1,36 @@
 <!DOCTYPE html>
-<html class="dark" lang="id" style="background:#0a0c10">
+<html lang="id" style="background:oklch(98.8% 0.003 106.5)">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script>
+        (() => {
+            const storageKey = 'homePutra.theme';
+            const savedTheme = localStorage.getItem(storageKey);
+            const theme = savedTheme === 'dark' || savedTheme === 'light' ? savedTheme : 'light';
+
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+            document.documentElement.style.colorScheme = theme;
+            document.documentElement.style.background = theme === 'dark' ? '#0a0c10' : 'oklch(98.8% 0.003 106.5)';
+        })();
+    </script>
 
     @php
         $siteName = $settings['site_name'] ?? config('app.name', 'Home Putra Interior');
-        $metaDescription = $settings['site_description'] ?? '';
+        $seoTitle = $settings['seo_meta_title'] ?? $siteName;
+        $metaTitle = trim($__env->yieldContent('meta_title', $seoTitle));
+        $documentTitle = trim($__env->yieldContent('title', $metaTitle));
+        $metaDescription = $settings['seo_meta_description'] ?? ($settings['site_description'] ?? '');
         $metaKeywords = $settings['seo_keywords'] ?? '';
+        $googleAnalyticsId = trim($settings['google_analytics_id'] ?? '');
+        $hasGoogleAnalytics = preg_match('/^G-[A-Z0-9-]+$/i', $googleAnalyticsId);
         $showBrandIntro = request()->routeIs('home');
     @endphp
 
     {{-- Primary SEO Meta Tags --}}
-    <title>@hasSection('title')@yield('title') | {{ $siteName }}@else{{ $siteName }}@endif</title>
-    <meta name="title" content="@yield('meta_title', $siteName)">
+    <title>{{ $documentTitle }}</title>
+    <meta name="title" content="{{ $metaTitle }}">
     <meta name="description" content="@yield('meta_description', $metaDescription)">
     <meta name="keywords" content="@yield('meta_keywords', $metaKeywords)">
     <meta name="author" content="{{ $siteName }}">
@@ -34,7 +50,7 @@
     {{-- Open Graph / Facebook --}}
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('og_title', $siteName)">
+    <meta property="og:title" content="@yield('og_title', $metaTitle)">
     <meta property="og:description" content="@yield('og_description', $metaDescription)">
     <meta property="og:image" content="@yield('og_image', asset('assets/images/logo.png'))">
     <meta property="og:image:width" content="1200">
@@ -46,7 +62,7 @@
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ url()->current() }}">
-    <meta name="twitter:title" content="@yield('twitter_title', $siteName)">
+    <meta name="twitter:title" content="@yield('twitter_title', $metaTitle)">
     <meta name="twitter:description" content="@yield('twitter_description', $metaDescription)">
     <meta name="twitter:image" content="@yield('twitter_image', asset('assets/images/logo.png'))">
 
@@ -94,7 +110,7 @@
             '@type' => 'LocalBusiness',
             '@id' => url('/') . '#organization',
             'name' => $siteName,
-            'description' => $settings['site_description'] ?? '',
+            'description' => $metaDescription,
             'url' => url('/'),
             'logo' => asset('assets/images/logo.png'),
             'image' => asset('assets/images/logo.png'),
@@ -131,6 +147,16 @@
         @json($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
     </script>
 
+    @if($hasGoogleAnalytics)
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $googleAnalyticsId }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ $googleAnalyticsId }}');
+    </script>
+    @endif
+
     {{-- BreadcrumbList Schema (Dynamic) --}}
     @hasSection('breadcrumb_schema')
     @yield('breadcrumb_schema')
@@ -153,7 +179,12 @@
     @stack('styles')
 </head>
 
-<body class="{{ $showBrandIntro ? 'brand-intro-lock ' : '' }}bg-background-dark text-white antialiased overflow-x-hidden" style="background:#0a0c10">
+<body class="{{ $showBrandIntro ? 'brand-intro-lock ' : '' }}frontend-theme bg-background-dark text-white antialiased overflow-x-hidden">
+    <noscript>
+        <div class="theme-keep-dark fixed inset-x-0 top-0 z-[100000] bg-primary px-4 py-3 text-center text-sm font-bold text-black">
+            JavaScript sedang nonaktif. Beberapa fitur interaktif seperti menu, tema, dan formulir konsultasi mungkin tidak berjalan.
+        </div>
+    </noscript>
 
     @if($showBrandIntro)
     {{-- Brand Intro --}}
@@ -184,7 +215,7 @@
     @include('frontend.partials.navbar')
 
     {{-- Mobile Menu Overlay --}}
-    <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 z-55 hidden opacity-0 transition-opacity duration-300"></div>
+    <div id="mobile-menu-overlay" class="theme-keep-dark fixed inset-0 bg-black/50 z-[99980] hidden opacity-0 transition-opacity duration-300"></div>
 
     {{-- Main Content --}}
     <main id="main-content">
@@ -211,7 +242,8 @@
                 this.waOpen = false;
             }
         }"
-        class="fixed bottom-6 right-6 z-[1000] font-sans flex flex-col items-end">
+        class="theme-keep-dark fixed bottom-6 right-6 z-[1000] font-sans flex flex-col items-end"
+        @keydown.escape.window="waOpen = false">
         
         {{-- Chat Box Modal --}}
         <div x-show="waOpen" 
@@ -222,7 +254,11 @@
              x-transition:leave-start="opacity-100 scale-100 translate-y-0"
              x-transition:leave-end="opacity-0 scale-50 translate-y-10"
              x-cloak
+             id="whatsapp-chat-panel"
              class="mb-4 w-[340px] bg-[#efeae2] rounded-[16px] shadow-2xl overflow-hidden flex flex-col border border-black/5"
+             role="dialog"
+             aria-modal="false"
+             aria-labelledby="whatsapp-chat-title"
              @click.away="waOpen = false">
              
             {{-- Header --}}
@@ -235,11 +271,11 @@
                         <div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#25D366] border-2 border-[#008069] rounded-full"></div>
                     </div>
                     <div>
-                        <h4 class="font-semibold text-[15px] leading-tight">Customer Service</h4>
+                        <h4 id="whatsapp-chat-title" class="font-semibold text-[15px] leading-tight">Customer Service</h4>
                         <p class="text-[11px] text-white/80 mt-0.5">Membalas dalam beberapa menit</p>
                     </div>
                 </div>
-                <button @click="waOpen = false" aria-label="Close Chat" class="hover:bg-black/10 p-1.5 rounded-full transition-colors text-white/90">
+                <button @click="waOpen = false" aria-label="Tutup chat" class="hover:bg-black/10 p-1.5 rounded-full transition-colors text-white/90">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
             </div>
@@ -271,7 +307,7 @@
         </div>
 
         {{-- Floating Toggle Button --}}
-        <button @click="waOpen = !waOpen" class="group relative flex items-center justify-center" aria-label="Toggle WhatsApp Chat">
+        <button @click="waOpen = !waOpen" class="group relative flex items-center justify-center" aria-label="Buka atau tutup chat WhatsApp" :aria-expanded="waOpen.toString()" aria-controls="whatsapp-chat-panel">
             {{-- Animasi Denyut (Pulse) --}}
             <div class="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-30" x-show="!waOpen"></div>
 
@@ -292,10 +328,47 @@
     @endif
 
     {{-- Scripts --}}
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
     <script defer src="{{ asset('assets/js/aos.min.js') }}"></script>
     <script defer src="{{ asset('assets/js/main.js') }}"></script>
     <script>
+        (() => {
+            const storageKey = 'homePutra.theme';
+            const root = document.documentElement;
+            const toggles = () => document.querySelectorAll('[data-theme-toggle]');
+
+            function setTheme(theme) {
+                const normalized = theme === 'dark' ? 'dark' : 'light';
+
+                root.classList.toggle('dark', normalized === 'dark');
+                root.style.colorScheme = normalized;
+                root.style.background = normalized === 'dark' ? '#0a0c10' : 'oklch(98.8% 0.003 106.5)';
+                localStorage.setItem(storageKey, normalized);
+
+                toggles().forEach((toggle) => {
+                    const icon = toggle.querySelector('[data-theme-icon]');
+                    const label = toggle.querySelector('[data-theme-label]');
+                    const isDark = normalized === 'dark';
+
+                    toggle.setAttribute('aria-label', isDark ? 'Aktifkan light mode' : 'Aktifkan dark mode');
+                    toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+                    if (icon) icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+                    if (label) label.textContent = isDark ? 'Light' : 'Dark';
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const currentTheme = root.classList.contains('dark') ? 'dark' : 'light';
+                setTheme(currentTheme);
+
+                toggles().forEach((toggle) => {
+                    toggle.addEventListener('click', () => {
+                        setTheme(root.classList.contains('dark') ? 'light' : 'dark');
+                    });
+                });
+            });
+        })();
+
         (() => {
             window.addEventListener('beforeunload', () => {
                 sessionStorage.setItem('homePutra.lastPath', window.location.pathname + window.location.search);

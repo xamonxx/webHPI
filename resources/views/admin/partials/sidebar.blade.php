@@ -52,11 +52,11 @@
     <div class="p-4 border-t border-white/5 bg-black/20">
         <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 transition-colors group cursor-pointer">
             <div class="w-10 h-10 rounded-full bg-linear-to-tr from-gray-700 to-gray-600 flex items-center justify-center text-white font-bold text-sm border-2 border-[#0B0D11] shadow-lg">
-                AD
+                {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 2)) }}
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-sm font-bold text-white truncate group-hover:text-primary transition-colors">Admin Super</p>
-                <p class="text-[10px] text-gray-500 truncate">admin@homeputra.com</p>
+                <p class="text-sm font-bold text-white truncate group-hover:text-primary transition-colors">{{ auth()->user()->name ?? 'Admin' }}</p>
+                <p class="text-[10px] text-gray-500 truncate">{{ auth()->user()->email ?? '-' }}</p>
             </div>
             <form action="{{ route('admin.logout') }}" method="POST">
                 @csrf
